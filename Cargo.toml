@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = "0.14.2"
+bevy = { version = "0.14.2", features = ["dynamic_linking"] }
 image = "0.25.2"
 num-complex = "0.4.6"
 

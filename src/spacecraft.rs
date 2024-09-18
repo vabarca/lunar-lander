@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-#[derive(Component, Debug)]
+#[derive(Component)]
 pub struct Spacecraft{
     name: String,
     x: usize,
@@ -16,6 +16,10 @@ impl Spacecraft{
             name,
             sprite,
         }
+    }
+
+    pub fn get_name(&self) -> String {
+        self.name.clone()
     }
 }
 
