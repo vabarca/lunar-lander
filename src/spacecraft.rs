@@ -10,14 +10,16 @@ pub struct SpacecraftName(pub String);
 #[derive(Bundle)]
 pub struct Spacecraft{
     marker: Player,
-    name: SpacecraftName
+    name: SpacecraftName,
+    sprite: SpriteBundle,
 }
 
 impl Spacecraft{
-    pub fn new(name: String) -> Self {
+    pub fn new(name: String, sprite: SpriteBundle) -> Self {
         Self {
             marker: Player,
             name: SpacecraftName(name),
+            sprite
         }
     }
 }
