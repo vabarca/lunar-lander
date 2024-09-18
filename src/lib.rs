@@ -1,2 +1,2 @@
-pub mod utils;
 pub mod spacecraft;
+pub mod inputs;

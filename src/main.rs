@@ -1,31 +1,30 @@
 use bevy::prelude::*;
-use lunar_lander::spacecraft::Spacecraft;
+use bevy::input::common_conditions::input_just_pressed;
+use lunar_lander::{
+    spacecraft::*,
+    inputs::*,
+};
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>){
+fn setup(mut commands: Commands, _asset_server: Res<AssetServer>){
     commands.spawn(Camera2dBundle::default());
-
-    let sprite = SpriteBundle {
-        texture: asset_server.load("sprite/space/spacecraft.png"),
-        ..default()
-    };
-    commands.spawn(Spacecraft::new("apollo".to_string(), 100, 200, sprite));
+    commands.spawn(Spacecraft::new("apollo".to_string()));
 }
 
-fn update(query: Query<&Spacecraft>) {
-    for obj in &query {
-        if obj.get_name() == "apollo".to_string() {
-            println!("hola {}", obj.get_name());
-        }
-        else {
-            println!("no te conozco");
-        }
+fn update(query: Query<&SpacecraftName, With<Player>>) {
+    for name in &query {
+        println!("hola {}", name.0);
     }
 }
 
 fn main() {
+
     App::new()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .add_systems(Startup, setup)
         .add_systems(Update, update)
+        .add_systems(Update, 
+            (
+                quit_game.run_if(input_just_pressed(KeyCode::KeyQ)),
+            ))
         .run();
 }
