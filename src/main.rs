@@ -1,13 +1,13 @@
 use bevy::prelude::*;
 use bevy::input::common_conditions::input_just_pressed;
 use lunar_lander::{
-    spacecraft::*,
     inputs::*,
+    spacecraft::*,
 };
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>){
     commands.spawn(Camera2dBundle::default());
-    commands.spawn(Spacecraft::new("apollo".to_string(),
+    commands.spawn(Spacecraft::new("Apollo 11".to_string(),
                                          SpriteBundle {
                                                 texture: asset_server.load("sprite/space/spacecraft_128x128.png"),
                                                 transform: Transform::from_xyz(25.0, 50.0, 0.0).with_scale(Vec3::splat(0.5)),
