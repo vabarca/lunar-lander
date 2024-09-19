@@ -28,14 +28,6 @@ fn main() {
             (
                 quit_game.run_if(input_just_pressed(KeyCode::KeyQ)),
                 keyboard_input_system,
-                //     move_player_up.run_if(input_just_pressed(KeyCode::ArrowUp)),
-                //     move_player_up.run_if(input_pressed(KeyCode::ArrowUp)),
-                //     move_player_down.run_if(input_just_pressed(KeyCode::ArrowDown)),
-                //     move_player_down.run_if(input_pressed(KeyCode::ArrowDown)),
-                //     move_player_left.run_if(input_just_pressed(KeyCode::ArrowLeft)),
-                //     move_player_left.run_if(input_pressed(KeyCode::ArrowLeft)),
-                //     move_player_right.run_if(input_just_pressed(KeyCode::ArrowRight)),
-                //     move_player_right.run_if(input_pressed(KeyCode::ArrowRight)),
             ),
         )
         .run();
