@@ -11,17 +11,16 @@ pub struct Ufo;
 pub struct SpacecraftName(pub String);
 
 #[derive(Bundle)]
-pub struct Spacecraft{
+pub struct Spacecraft {
     name: SpacecraftName,
     sprite: SpriteBundle,
 }
 
-impl Spacecraft{
+impl Spacecraft {
     pub fn new(name: String, sprite: SpriteBundle) -> Self {
         Self {
             name: SpacecraftName(name),
-            sprite
+            sprite,
         }
     }
 }
-
