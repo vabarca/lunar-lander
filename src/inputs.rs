@@ -27,14 +27,18 @@ pub fn keyboard_input_system(
     if arrow_down {
         move_player_down(&mut transform)
     }
-    if arrow_left {
+    if !space && arrow_left {
         move_player_left(&mut transform)
     }
-    if arrow_right {
+    if !space && arrow_right {
         move_player_right(&mut transform)
     }
-    if space && arrow_left {}
-    if space && arrow_right {}
+    if space && arrow_left {
+        rotate_player_left(&mut transform)
+    }
+    if space && arrow_right {
+        rotate_player_right(&mut transform)
+    }
 }
 
 fn move_player_up(transform: &mut Transform) {
@@ -46,9 +50,17 @@ fn move_player_down(transform: &mut Transform) {
 }
 
 fn move_player_left(transform: &mut Transform) {
-    transform.rotate_z(0.01);
+    transform.translation += Vec3::new(-1.0, 0.0, 0.0);
 }
 
 fn move_player_right(transform: &mut Transform) {
+    transform.translation += Vec3::new(1.0, 0.0, 0.0);
+}
+
+fn rotate_player_left(transform: &mut Transform) {
+    transform.rotate_z(0.01);
+}
+
+fn rotate_player_right(transform: &mut Transform) {
     transform.rotate_z(-0.01);
 }
