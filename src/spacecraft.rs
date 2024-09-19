@@ -5,11 +5,13 @@ use bevy::prelude::*;
 pub struct Player;
 
 #[derive(Component)]
+pub struct Ufo;
+
+#[derive(Component)]
 pub struct SpacecraftName(pub String);
 
 #[derive(Bundle)]
 pub struct Spacecraft{
-    marker: Player,
     name: SpacecraftName,
     sprite: SpriteBundle,
 }
@@ -17,7 +19,6 @@ pub struct Spacecraft{
 impl Spacecraft{
     pub fn new(name: String, sprite: SpriteBundle) -> Self {
         Self {
-            marker: Player,
             name: SpacecraftName(name),
             sprite
         }

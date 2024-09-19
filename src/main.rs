@@ -7,17 +7,11 @@ use lunar_lander::{
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>){
     commands.spawn(Camera2dBundle::default());
-    commands.spawn(Spacecraft::new("Apollo 11".to_string(),
+    commands.spawn((Player, Spacecraft::new("Apollo 11".to_string(),
                                          SpriteBundle {
                                                 texture: asset_server.load("sprite/space/spacecraft_128x128.png"),
                                                 transform: Transform::from_xyz(25.0, 50.0, 0.0).with_scale(Vec3::splat(0.5)),
-                                                ..Default::default()}));
-}
-
-fn _update(query: Query<&SpacecraftName, With<Player>>) {
-    for name in &query {
-        println!("hola {}", name.0);
-    }
+                                                ..Default::default()})));
 }
 
 fn main() {
@@ -25,7 +19,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .add_systems(Startup, setup)
-        //.add_systems(Update, _update)
+        //.add_systems(Update, update)
         .add_systems(Update, 
             (
                 quit_game.run_if(input_just_pressed(KeyCode::KeyQ)),

@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{ecs::query, prelude::*};
 use bevy::app::AppExit;
 use crate::spacecraft::{Player, SpacecraftName};
 
@@ -13,20 +13,24 @@ fn info_move_player_dir(query: &Query<&SpacecraftName, With<Player>>, dir: &str)
     }  
 }
 
-pub fn move_player_up(query: Query<&SpacecraftName, With<Player>>){
-    info_move_player_dir(&query, "UP");
+pub fn move_player_up(query_name: Query<&SpacecraftName, With<Player>>){
+    info_move_player_dir(&query_name, "UP");
 }
 
-pub fn move_player_down(query: Query<&SpacecraftName, With<Player>>){
-    info_move_player_dir(&query, "DOWN");
+pub fn move_player_down(query_name: Query<&SpacecraftName, With<Player>>){
+    info_move_player_dir(&query_name, "DOWN");
 }
 
-pub fn move_player_left(query: Query<&SpacecraftName, With<Player>>){
-    info_move_player_dir(&query, "LEFT");
+pub fn move_player_left(query_name: Query<&SpacecraftName, With<Player>>,
+                        mut query_sprite: Query<&Sprite, With<Player>>){
+    info_move_player_dir(&query_name, "LEFT");
+    for sprite in &query_sprite{
+        sprite.tr
+    }
 }
 
-pub fn move_player_right(query: Query<&SpacecraftName, With<Player>>){
-    info_move_player_dir(&query, "RIGHT");
+pub fn move_player_right(query_name: Query<&SpacecraftName, With<Player>>){
+    info_move_player_dir(&query_name, "RIGHT");
 }
 
 
