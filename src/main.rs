@@ -1,5 +1,8 @@
 use bevy::prelude::*;
-use bevy::input::common_conditions::input_just_pressed;
+use bevy::input::common_conditions::{
+    input_just_pressed,
+    input_pressed,
+};
 use lunar_lander::{
     inputs::*,
     spacecraft::*,
@@ -19,14 +22,20 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .add_systems(Startup, setup)
-        //.add_systems(Update, update)
+        // Set the Fixed Timestep interval to 60 Hz for FixedUpdate
+        //.insert_resource(Time::<Fixed>::from_hz(60.0))
+        //.add_systems(FixedUpdate, update)
         .add_systems(Update, 
             (
                 quit_game.run_if(input_just_pressed(KeyCode::KeyQ)),
                 move_player_up.run_if(input_just_pressed(KeyCode::ArrowUp)),
+                move_player_up.run_if(input_pressed(KeyCode::ArrowUp)),
                 move_player_down.run_if(input_just_pressed(KeyCode::ArrowDown)),
+                move_player_down.run_if(input_pressed(KeyCode::ArrowDown)),
                 move_player_left.run_if(input_just_pressed(KeyCode::ArrowLeft)),
+                move_player_left.run_if(input_pressed(KeyCode::ArrowLeft)),
                 move_player_right.run_if(input_just_pressed(KeyCode::ArrowRight)),
+                move_player_right.run_if(input_pressed(KeyCode::ArrowRight)),
             ))
         .run();
 }
