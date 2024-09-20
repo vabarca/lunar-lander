@@ -11,56 +11,70 @@ pub fn keyboard_input_system(
     input: Res<ButtonInput<KeyCode>>,
     mut query: Query<&mut Transform, With<Player>>,
 ) {
-    let _shift = input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
+    let shift = input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     let _ctrl = input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
-    let space = input.pressed(KeyCode::Space);
-    let arrow_left = input.pressed(KeyCode::ArrowLeft);
-    let arrow_right = input.pressed(KeyCode::ArrowRight);
-    let arrow_up = input.pressed(KeyCode::ArrowUp);
-    let arrow_down = input.pressed(KeyCode::ArrowDown);
+    let space = input.pressed(KeyCode::Space) || input.just_pressed(KeyCode::Space) ;
+    let arrow_left = input.pressed(KeyCode::ArrowLeft) || input.just_pressed(KeyCode::ArrowLeft);
+    let arrow_right = input.pressed(KeyCode::ArrowRight) || input.just_pressed(KeyCode::ArrowRight);
+    let arrow_up = input.pressed(KeyCode::ArrowUp) || input.just_pressed(KeyCode::ArrowUp);
+    let arrow_down = input.pressed(KeyCode::ArrowDown) || input.just_pressed(KeyCode::ArrowDown);
 
     let mut transform = query.single_mut();
 
-    if arrow_up {
-        move_player_up(&mut transform)
+    if !shift && arrow_up {
+        move_up(&mut transform)
     }
-    if arrow_down {
-        move_player_down(&mut transform)
+    if !shift &&arrow_down {
+        move_down(&mut transform)
     }
     if !space && arrow_left {
-        move_player_left(&mut transform)
+        move_left(&mut transform)
     }
     if !space && arrow_right {
-        move_player_right(&mut transform)
+        move_right(&mut transform)
     }
     if space && arrow_left {
-        rotate_player_left(&mut transform)
+        rotate_left(&mut transform)
     }
     if space && arrow_right {
-        rotate_player_right(&mut transform)
+        rotate_right(&mut transform)
+    }
+    if shift && arrow_up {
+        scale_up(&mut transform)
+    }
+    if shift && arrow_down {
+        scale_down(&mut transform)
     }
 }
 
-fn move_player_up(transform: &mut Transform) {
+fn move_up(transform: &mut Transform) {
     transform.translation += Vec3::new(0.0, 1.0, 0.0);
 }
 
-fn move_player_down(transform: &mut Transform) {
+fn move_down(transform: &mut Transform) {
     transform.translation += Vec3::new(0.0, -1.0, 0.0);
 }
 
-fn move_player_left(transform: &mut Transform) {
+fn move_left(transform: &mut Transform) {
     transform.translation += Vec3::new(-1.0, 0.0, 0.0);
 }
 
-fn move_player_right(transform: &mut Transform) {
+fn move_right(transform: &mut Transform) {
     transform.translation += Vec3::new(1.0, 0.0, 0.0);
 }
 
-fn rotate_player_left(transform: &mut Transform) {
+fn rotate_left(transform: &mut Transform) {
     transform.rotate_z(0.01);
 }
 
-fn rotate_player_right(transform: &mut Transform) {
+fn rotate_right(transform: &mut Transform) {
     transform.rotate_z(-0.01);
+}
+
+fn scale_up(transform: &mut Transform) {
+    transform.scale *= Vec3::splat(1.01);
+}
+
+fn scale_down(transform: &mut Transform) {
+    transform.scale *= Vec3::splat(0.99);
 }
