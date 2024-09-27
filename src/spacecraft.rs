@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use perlin_noise::PerlinNoise;
+use libnoise::prelude::*;
 
 /// This will be used to identify the main player entity
 #[derive(Component)]
@@ -7,34 +7,48 @@ pub struct Player {
     pub position: Vec3,
     pub velocity: Vec3,
     pub acceleration: Vec3,
-    perlin: PerlinNoise,
+    noise_x: Billow<1, Simplex<1>>,
+    noise_y: Billow<1, Simplex<1>>,
+}
+
+fn f64_to_f32(x: f64) -> f32{
+    let y = x as f32;
+    assert_eq!(
+        x.is_finite(),
+        y.is_finite(),
+    );
+    y
 }
 
 impl Player {
     pub fn origin() -> Player {
         Player {
             position: Vec3::ZERO,
-            velocity: Vec3::splat(2.0),
+            velocity: Vec3::new(1.0, 1.0, 0.0),
             acceleration: Vec3::ZERO,
-            perlin: PerlinNoise::new(),
+            noise_x: Source::simplex(rand::random::<u64>()).billow(3, 0.013, 2.0, 0.5),
+            noise_y: Source::simplex(rand::random::<u64>()).billow(3, 0.013, 2.0, 0.5),
         }
     }
     pub fn new(position: Vec3) -> Player {
         Player {
             position,
-            velocity: Vec3::ONE,
+            velocity: Vec3::new(1.0, 1.0, 0.0),
             acceleration: Vec3::ZERO,
-            perlin: PerlinNoise::new(),
+            noise_x: Source::simplex(rand::random::<u64>()).billow(3, 0.013, 2.0, 0.5),
+            noise_y: Source::simplex(rand::random::<u64>()).billow(3, 0.013, 2.0, 0.5),
         }
     }
 
     pub fn update(&mut self) {
-        //info!("position pre {} velocity {}", self.position, self.velocity);
-        self.velocity += self.acceleration;
+        //self.velocity += self.acceleration;
         self.position += self.velocity;
-        self.acceleration += Vec2::new(f32::from(self.perlin.get2d(self.position.x)), self.perlin.get2d(self.position.x))
-
-        //info!("position post{}", self.position);
+        let noise_x = f64_to_f32(self.noise_x.sample([self.position.x as f64]));
+        let noise_y = f64_to_f32(self.noise_y.sample([self.position.y as f64]));
+        self.velocity += Vec3::new(noise_x, noise_y, 0_f32);
+        //info!("Pos {}", self.position);
+        //info!("Acc {}", self.acceleration);
+        info!("Vel {} Pos {}", self.velocity, self.position);
         
     }
 
