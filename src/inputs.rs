@@ -13,7 +13,7 @@ pub fn keyboard_input_system(
 ) {
     let shift = input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     let _ctrl = input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
-    let space = input.pressed(KeyCode::Space) || input.just_pressed(KeyCode::Space) ;
+    let space = input.pressed(KeyCode::Space) || input.just_pressed(KeyCode::Space);
     let arrow_left = input.pressed(KeyCode::ArrowLeft) || input.just_pressed(KeyCode::ArrowLeft);
     let arrow_right = input.pressed(KeyCode::ArrowRight) || input.just_pressed(KeyCode::ArrowRight);
     let arrow_up = input.pressed(KeyCode::ArrowUp) || input.just_pressed(KeyCode::ArrowUp);
@@ -24,7 +24,7 @@ pub fn keyboard_input_system(
     if !shift && arrow_up {
         move_up(&mut transform)
     }
-    if !shift &&arrow_down {
+    if !shift && arrow_down {
         move_down(&mut transform)
     }
     if !space && arrow_left {
