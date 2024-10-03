@@ -1,5 +1,6 @@
 use bevy::{input::common_conditions::input_just_pressed, prelude::*, render::camera::ScalingMode};
 use lunar_lander::{inputs::*, spacecraft::*, vectors::*};
+use bevy::color::palettes::basic::WHITE;
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut camera_bundle = Camera2dBundle::default();
@@ -17,6 +18,26 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             },
         ),
     ));
+}
+
+
+fn draw_cursor(
+    camera_query: Query<(&Camera, &GlobalTransform)>,
+    windows: Query<&Window>,
+    mut gizmos: Gizmos,
+) {
+    let (camera, camera_transform) = camera_query.single();
+
+    let Some(cursor_position) = windows.single().cursor_position() else {
+        return;
+    };
+
+    // Calculate a world position based on the cursor's position.
+    let Some(point) = camera.viewport_to_world_2d(camera_transform, cursor_position) else {
+        return;
+    };
+
+    gizmos.circle_2d(point, 10., WHITE);
 }
 
 fn update(
@@ -48,6 +69,9 @@ fn main() {
                 quit_game.run_if(input_just_pressed(KeyCode::KeyQ)),
                 keyboard_input_system,
                 update,
+                draw_cursor,
+                //cursor_position,
+                //cursor_events,
             ),
         )
         .run();
