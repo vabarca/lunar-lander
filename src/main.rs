@@ -1,8 +1,5 @@
-use bevy::{
-    input::common_conditions::input_just_pressed, math::vec3, prelude::*,
-    render::camera::ScalingMode,
-};
-use lunar_lander::{inputs::*, spacecraft::*};
+use bevy::{input::common_conditions::input_just_pressed, prelude::*, render::camera::ScalingMode};
+use lunar_lander::{inputs::*, spacecraft::*, vectors::*};
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut camera_bundle = Camera2dBundle::default();
@@ -30,9 +27,12 @@ fn update(
     let window = windows.single_mut();
     let mut transform = transforms.single_mut();
     let mut player = players.single_mut();
-    player.check_boundary(window.resolution.physical_size().as_vec2());
+    let screen = window.resolution.physical_size().as_vec2();
+    let screen_v2 = V2::new(screen.x as f64, screen.y as f64);
+    player.check_boundary(&screen_v2);
     player.update();
-    transform.translation = vec3(player.position.x, player.position.y, player.position.z);
+    transform.translation.x = f64_to_f32(player.position.x);
+    transform.translation.y = f64_to_f32(player.position.y);
 }
 
 fn main() {

@@ -1,3 +1,16 @@
+use rand::prelude::*;
+
+pub fn f64_to_f32(x: f64) -> f32 {
+    let y = x as f32;
+    assert_eq!(x.is_finite(), y.is_finite(),);
+    y
+}
+
+pub struct V2F32 {
+    pub x: f32,
+    pub y: f32,
+}
+
 pub struct V2 {
     pub x: f64,
     pub y: f64,
@@ -17,24 +30,27 @@ impl V2 {
     }
 
     pub fn random() -> V2 {
-        V2 { x: 1.0, y: 1.0 }
+        V2 {
+            x: rand::thread_rng().gen(),
+            y: rand::thread_rng().gen(),
+        }
     }
 
     pub fn abs(&self) -> f64 {
         (self.x.powf(2_f64) + self.y.powf(2_f64)).sqrt()
     }
 
-    pub fn dot(&mut self, v: &V3) -> f64 {
+    pub fn dot(&mut self, v: &V2) -> f64 {
         (self.x * v.x) + (self.y * v.y)
     }
 
-    pub fn add(&mut self, v: &V3) -> &mut Self {
+    pub fn add(&mut self, v: &V2) -> &mut Self {
         self.x += v.x;
         self.y += v.y;
         self
     }
 
-    pub fn sub(&mut self, v: &V3) -> &mut Self {
+    pub fn sub(&mut self, v: &V2) -> &mut Self {
         self.x -= v.x;
         self.y -= v.y;
         self
@@ -66,6 +82,12 @@ impl V2 {
     }
 }
 
+pub struct V3F32 {
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
+}
+
 pub struct V3 {
     pub x: f64,
     pub y: f64,
@@ -95,9 +117,9 @@ impl V3 {
 
     pub fn random() -> V3 {
         V3 {
-            x: 1.0,
-            y: 1.0,
-            z: 1.0,
+            x: rand::thread_rng().gen(),
+            y: rand::thread_rng().gen(),
+            z: rand::thread_rng().gen(),
         }
     }
 
