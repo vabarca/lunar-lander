@@ -1,4 +1,4 @@
-use bevy::{a11y::accesskit::Vec2, math::Vec3};
+use bevy::prelude::*;
 use rand::prelude::*;
 
 pub fn f64_to_f32(x: f64) -> f32 {
@@ -32,38 +32,42 @@ impl V2 {
         }
     }
 
-    pub fn abs(&self) -> f64 {
+    pub fn self_abs(&self) -> f64 {
         (self.x.powf(2_f64) + self.y.powf(2_f64)).sqrt()
     }
 
-    pub fn dot(&mut self, v: &V2) -> f64 {
+    pub fn self_dot(&mut self, v: &V2) -> f64 {
         (self.x * v.x) + (self.y * v.y)
     }
 
-    pub fn add(&mut self, v: &V2) -> &mut Self {
+    pub fn self_add(&mut self, v: &V2) -> &mut Self {
         self.x += v.x;
         self.y += v.y;
         self
     }
 
-    pub fn sub(&mut self, v: &V2) -> &mut Self {
+    pub fn self_sub(&mut self, v: &V2) -> &mut Self {
         self.x -= v.x;
         self.y -= v.y;
         self
     }
 
-    pub fn div(&mut self, value: f64) -> &mut Self {
-        self.mul(1_f64 / value)
+    pub fn sub(v1: &V2, v2: &V2) -> V2 {
+        V2::new(v1.x - v2.x, v1.y - v2.y)
     }
 
-    pub fn mul(&mut self, value: f64) -> &mut Self {
+    pub fn self_div(&mut self, value: f64) -> &mut Self {
+        self.self_mul(1_f64 / value)
+    }
+
+    pub fn self_mul(&mut self, value: f64) -> &mut Self {
         self.x *= value;
         self.y *= value;
         self
     }
 
-    pub fn normalize(&mut self) -> &mut Self {
-        self.div(self.abs())
+    pub fn self_normalize(&mut self) -> &mut Self {
+        self.self_div(self.self_abs())
     }
 
     pub fn as_vec3(&self) -> Vec3 {
@@ -71,18 +75,18 @@ impl V2 {
     }
 
     pub fn as_vec2(&self) -> Vec2 {
-        Vec2::new(self.x, self.y)
+        Vec2::new(f64_to_f32(self.x), f64_to_f32(self.y))
     }
 
-    pub fn update(&mut self, v: &Vec2) -> &mut Self {
+    pub fn set(&mut self, v: &V2) -> &mut Self {
         self.x = v.x;
         self.y = v.y;
         self
-    }
+    }    
 
-    pub fn limit(&mut self, max: f64) -> &mut Self {
-        if self.abs() > max {
-            self.normalize().mul(max);
+    pub fn self_limit(&mut self, max: f64) -> &mut Self {
+        if self.self_abs() > max {
+            self.self_normalize().self_mul(max);
         }
         self
     }
@@ -97,12 +101,12 @@ mod tests{
     #[test]
     fn v2_abs() {
         let vector = V2::new(4.0, 3.0);
-        assert_eq!(vector.abs(), 5.0);
+        assert_eq!(vector.self_abs(), 5.0);
     }
 
     #[test]
     fn v2_normalize() {
         let mut vector = V2::new(4.0, 3.0);
-        assert_eq!(vector.normalize().abs(), 1.0);
+        assert_eq!(vector.self_normalize().sefl_abs(), 1.0);
     }
 }

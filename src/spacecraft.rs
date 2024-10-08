@@ -35,19 +35,20 @@ impl Player {
         }
     }
 
-    pub fn update(&mut self) {
+    pub fn update_randomly(&mut self) {
         let noise_x = self.noise_x.sample([self.position.x as f64]);
         let noise_y = self.noise_y.sample([self.position.y as f64]);
 
-        self.acceleration = V2::new(noise_x, noise_y);
-        self.acceleration.normalize().mul(0.5);
-        self.velocity.add(&self.acceleration);
-        self.velocity.limit(self.top_speed);
-        self.position.add(&self.velocity);
-        // info!(
-        //     "Vel {} Pos {} Acc {}",
-        //     self.velocity, self.position, self.acceleration
-        // );
+        self.update(&V2::new(noise_x, noise_y));
+    }    
+
+    pub fn update(&mut self, new_pos: &V2) {
+
+        let mut delta = V2::sub(new_pos, &self.position);
+        delta.self_normalize().self_mul(0.2);
+        self.acceleration.set(&delta);
+        self.velocity.self_add(&self.acceleration);
+        self.position.self_add(&self.velocity);
     }
 
     pub fn check_boundary(&mut self, boundary: &V2) {
