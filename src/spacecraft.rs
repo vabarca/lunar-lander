@@ -4,7 +4,7 @@ use libnoise::prelude::*;
 
 /// This will be used to identify the main player entity
 #[derive(Component)]
-pub struct Player {
+pub struct Mover {
     pub position: V2,
     pub velocity: V2,
     pub acceleration: V2,
@@ -13,9 +13,9 @@ pub struct Player {
     top_speed: f64,
 }
 
-impl Player {
-    pub fn origin() -> Player {
-        Player {
+impl Mover {
+    pub fn origin() -> Mover {
+        Mover {
             position: V2::zeros(),
             velocity: V2::zeros(),
             acceleration: V2::zeros(),
@@ -24,8 +24,8 @@ impl Player {
             top_speed: 5.0,
         }
     }
-    pub fn new(position: V2) -> Player {
-        Player {
+    pub fn new(position: V2) -> Mover {
+        Mover {
             position,
             velocity: V2::zeros(),
             acceleration: V2::zeros(),
@@ -44,7 +44,7 @@ impl Player {
 
     pub fn update(&mut self, new_pos: &V2) {
 
-        let mut delta = V2::sub(new_pos, &self.position);
+        let mut delta = V2::sub(&self.position, new_pos);
         delta.self_normalize().self_mul(0.2);
         self.acceleration.set(&delta);
         self.velocity.self_add(&self.acceleration);

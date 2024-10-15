@@ -53,7 +53,7 @@ impl V2 {
     }
 
     pub fn sub(v1: &V2, v2: &V2) -> V2 {
-        V2::new(v1.x - v2.x, v1.y - v2.y)
+        V2::new(v2.x - v1.x, v2.y - v1.y)
     }
 
     pub fn self_div(&mut self, value: f64) -> &mut Self {

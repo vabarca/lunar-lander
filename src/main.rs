@@ -7,7 +7,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     commands.spawn(camera_bundle);
     commands.spawn((
-        Player::origin(),
+        Mover::origin(),
         Spacecraft::new(
             "Apollo 11".to_string(),
             SpriteBundle {
@@ -41,8 +41,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 // fn update(
 //     mut windows: Query<&Window>,
-//     mut players: Query<&mut Player>,
-//     mut transforms: Query<&mut Transform, With<Player>>,
+//     mut players: Query<&mut Mover>,
+//     mut transforms: Query<&mut Transform, With<Mover>>,
 // ) {
 //     let window = windows.single_mut();
 //     let mut transform = transforms.single_mut();
@@ -59,8 +59,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 fn update(
     camera_query: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window>,
-    mut players: Query<&mut Player>,
-    mut transforms: Query<&mut Transform, With<Player>>,
+    mut players: Query<&mut Mover>,
+    mut transforms: Query<&mut Transform, With<Mover>>,
 ) {
     let (camera, camera_transform) = camera_query.single();
 
