@@ -1,67 +1,84 @@
 use crate::vectors::V2;
 use bevy::prelude::*;
-use libnoise::prelude::*;
+
+#[derive(Debug, Component, Clone)]
+pub struct Force {
+    pub v: V2,
+}
+
+impl Force {
+    pub fn zero() -> Force {
+        Force { v: V2::zeros() }
+    }
+    pub fn new(force: &V2) -> Force {
+        Force { v: force.clone() }
+    }
+
+    pub fn gravity(mass: f64, scale: f64) -> Force {
+        Force::new(V2::new(0.0, -9.8 * scale).mult(mass))
+    }
+
+    pub fn reset(&mut self) {
+        self.v.reset();
+    }
+}
 
 /// This will be used to identify the main player entity
-#[derive(Component)]
+#[derive(Component, Clone)]
 pub struct Mover {
-    pub position: V2,
-    pub velocity: V2,
-    pub acceleration: V2,
-    noise_x: Billow<1, Simplex<1>>,
-    noise_y: Billow<1, Simplex<1>>,
-    top_speed: f64,
+    pub pos: V2,
+    pub vel: V2,
+    pub forces: Force,
+    mass: f64,
 }
 
 impl Mover {
-    pub fn origin() -> Mover {
-        Mover {
-            position: V2::zeros(),
-            velocity: V2::zeros(),
-            acceleration: V2::zeros(),
-            noise_x: Source::simplex(rand::random::<u64>()).billow(3, 0.013, 2.0, 0.5),
-            noise_y: Source::simplex(rand::random::<u64>()).billow(3, 0.013, 2.0, 0.5),
-            top_speed: 5.0,
-        }
+    pub fn origin(mass: f64) -> Mover {
+        Mover::new(mass, V2::zeros())
     }
-    pub fn new(position: V2) -> Mover {
+    pub fn new(mass: f64, pos: V2) -> Mover {
         Mover {
-            position,
-            velocity: V2::zeros(),
-            acceleration: V2::zeros(),
-            noise_x: Source::simplex(rand::random::<u64>()).billow(3, 0.013, 2.0, 0.5),
-            noise_y: Source::simplex(rand::random::<u64>()).billow(3, 0.013, 2.0, 0.5),
-            top_speed: 5.0,
+            pos,
+            vel: V2::zeros(),
+            forces: Force::zero(),
+            mass,
         }
     }
 
-    pub fn update_randomly(&mut self) {
-        let noise_x = self.noise_x.sample([self.position.x as f64]);
-        let noise_y = self.noise_y.sample([self.position.y as f64]);
+    pub fn apply_force(&mut self, force: &Force) {
+        self.forces.v.add(&force.v);
+    }
 
-        self.update(&V2::new(noise_x, noise_y));
-    }    
+    pub fn mass(&self) -> f64 {
+        self.mass
+    }
 
-    pub fn update(&mut self, new_pos: &V2) {
+    pub fn update(&mut self) {
+        self.forces.v.div(self.mass);
+        info!("f {:?}", self.forces.v);
+        self.vel.add(&self.forces.v);
+        self.pos.add(&self.vel);
 
-        let mut delta = V2::sub(&self.position, new_pos);
-        delta.self_normalize().self_mul(0.2);
-        self.acceleration.set(&delta);
-        self.velocity.self_add(&self.acceleration);
-        self.position.self_add(&self.velocity);
+        self.forces.reset();
     }
 
     pub fn check_boundary(&mut self, boundary: &V2) {
         let boundary_x = boundary.x / 2.0;
         let boundary_y = boundary.y / 2.0;
-        if self.position.x >= boundary_x || self.position.x <= -boundary_x {
-            self.velocity.x *= -1.0;
+        if self.pos.x >= boundary_x{
+            self.pos.x -= boundary.x;
+        } else if self.pos.x <= -boundary_x {
+            self.pos.x += boundary.x;
         }
-        if self.position.y >= boundary_y || self.position.y <= -boundary_y {
-            self.velocity.y *= -1.0;
+
+        if self.pos.y <= -boundary_y {
+            self.vel.mult(-1.0);
         }
     }
 }
+
+#[derive(Component)]
+pub struct Player;
 
 #[derive(Component)]
 pub struct Ufo;
@@ -71,8 +88,8 @@ pub struct SpacecraftName(pub String);
 
 #[derive(Bundle)]
 pub struct Spacecraft {
-    name: SpacecraftName,
-    sprite: SpriteBundle,
+    pub name: SpacecraftName,
+    pub sprite: SpriteBundle,
 }
 
 impl Spacecraft {

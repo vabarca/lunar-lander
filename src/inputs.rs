@@ -1,4 +1,4 @@
-use crate::spacecraft::Mover;
+use crate::spacecraft::Player;
 use bevy::app::AppExit;
 use bevy::prelude::*;
 
@@ -9,7 +9,7 @@ pub fn quit_game(mut exit: EventWriter<AppExit>) {
 
 pub fn keyboard_input_system(
     input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<&mut Transform, With<Mover>>,
+    mut query: Query<&mut Transform, With<Player>>,
 ) {
     let shift = input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     let _ctrl = input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);

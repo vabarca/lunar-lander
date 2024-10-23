@@ -4,10 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = { version = "0.14.2", features = ["dynamic_linking"] }
+bevy = { version = "0.14.2", features = ["dynamic_linking", "bevy_sprite"] }
 bevy_vector_shapes = "0.8.2"
-# bevy_pixel_buffer = "0.8.1"
-# perlin_noise = "1.0.1"
 image = "0.25.2"
 libnoise = "1.1.2"
 num-complex = "0.4.6"
