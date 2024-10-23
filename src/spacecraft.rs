@@ -75,7 +75,7 @@ impl Mover {
         }
 
         if self.pos.y <= -boundary_y {
-            self.vel.mult(-1.0);
+            self.vel.y *= -1.0;
         }
     }
 }
