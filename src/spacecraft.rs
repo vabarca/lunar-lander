@@ -62,7 +62,10 @@ impl Mover {
         self.forces.reset();
     }
 
-    pub fn check_boundary(&mut self, boundary: &V2) {
+    pub fn check_boundary(&mut self, window: &Window) {
+        let screen = window.resolution.physical_size().as_vec2();
+        let boundary = V2::new(screen.x as f64, screen.y as f64);
+
         let boundary_x = boundary.x / 2.0;
         let boundary_y = boundary.y / 2.0;
         if self.pos.x >= boundary_x{

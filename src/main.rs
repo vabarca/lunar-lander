@@ -42,15 +42,11 @@ fn update(
     mut windows: Query<&Window>,
     mut query: Query<(&mut Transform, &mut Mover)>,
 ) {
-    let window = windows.single_mut();
-    let screen = window.resolution.physical_size().as_vec2();
-    let screen_v2 = V2::new(screen.x as f64, screen.y as f64);
-
     for (mut transform, mut mover) in &mut query {
         let mass = mover.mass();
         mover.apply_force(&Force::gravity(mass, 0.05));
         mover.update();
-        mover.check_boundary(&screen_v2);
+        mover.check_boundary(&windows.single_mut());
     
         transform.translation.x = f64_to_f32(mover.pos.x);
         transform.translation.y = f64_to_f32(mover.pos.y);
