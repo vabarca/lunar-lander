@@ -40,8 +40,9 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, mut windows: Qu
 
 fn update(
     mut windows: Query<&Window>,
-    mut query: Query<(&mut Transform, &mut Mover)>,
+    mut query: Query<(&mut Transform, &mut Mover), With<Player>>,
 ) {
+
     for (mut transform, mut mover) in &mut query {
         let mass = mover.mass();
         mover.apply_force(&Force::gravity(mass, 0.05));
