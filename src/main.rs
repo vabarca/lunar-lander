@@ -1,6 +1,6 @@
 use bevy::{input::common_conditions::input_just_pressed, prelude::*, render::camera::ScalingMode};
 use bevy_vector_shapes::prelude::*;
-use lunar_lander::{inputs::*, spacecraft::*, vectors::*};
+use lunar_lander::{inputs::*, spacecraft::*, vectors::*, forces::*};
 
 fn setup(mut commands: Commands, mut windows: Query<&Window>) {
     let mut camera_bundle = Camera2dBundle::default();

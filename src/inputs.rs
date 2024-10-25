@@ -1,4 +1,5 @@
-use crate::spacecraft::{Player, Mover, Force};
+use crate::spacecraft::{Player, Mover};
+use crate::forces::Force;
 use bevy::app::AppExit;
 use bevy::prelude::*;
 use crate::vectors::V2;
@@ -13,8 +14,7 @@ pub fn mouse_input_system(
     mut query: Query<&mut Mover, With<Player>>,
 ) {
     let mut mover = query.single_mut();
-    for button in buttons.get_pressed() {
-        println!("{:?} is currently held down", button);
+    for _ in buttons.get_pressed() {
         let wind = Force::new(&V2::new(-1.0, 0.0));
         mover.apply_force(&wind);
     }
