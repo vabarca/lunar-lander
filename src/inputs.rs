@@ -1,15 +1,28 @@
-use crate::spacecraft::Player;
+use crate::spacecraft::{Player, Mover, Force};
 use bevy::app::AppExit;
 use bevy::prelude::*;
+use crate::vectors::V2;
 
 pub fn quit_game(mut exit: EventWriter<AppExit>) {
     info!("Quitting game ...");
     exit.send(AppExit::Success);
 }
 
+pub fn mouse_input_system(
+    buttons: Res<ButtonInput<MouseButton>>,
+    mut query: Query<&mut Mover, With<Player>>,
+) {
+    let mut mover = query.single_mut();
+    for button in buttons.get_pressed() {
+        println!("{:?} is currently held down", button);
+        let wind = Force::new(&V2::new(-1.0, 0.0));
+        mover.apply_force(&wind);
+    }
+}
+
 pub fn keyboard_input_system(
     input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<&mut Transform, With<Player>>,
+    mut query: Query<&mut Mover, With<Player>>,
 ) {
     let shift = input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     let _ctrl = input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
@@ -19,62 +32,35 @@ pub fn keyboard_input_system(
     let arrow_up = input.pressed(KeyCode::ArrowUp) || input.just_pressed(KeyCode::ArrowUp);
     let arrow_down = input.pressed(KeyCode::ArrowDown) || input.just_pressed(KeyCode::ArrowDown);
 
-    let mut transform = query.single_mut();
+    let mut mover = query.single_mut();
 
     if !shift && arrow_up {
-        move_up(&mut transform)
+        move_up(&mut mover)
     }
     if !shift && arrow_down {
-        move_down(&mut transform)
+        move_down(&mut mover)
     }
     if !space && arrow_left {
-        move_left(&mut transform)
+        move_left(&mut mover)
     }
     if !space && arrow_right {
-        move_right(&mut transform)
-    }
-    if space && arrow_left {
-        rotate_left(&mut transform)
-    }
-    if space && arrow_right {
-        rotate_right(&mut transform)
-    }
-    if shift && arrow_up {
-        scale_up(&mut transform)
-    }
-    if shift && arrow_down {
-        scale_down(&mut transform)
+        move_right(&mut mover)
     }
 }
 
-fn move_up(transform: &mut Transform) {
-    transform.translation += Vec3::new(0.0, 1.0, 0.0);
+fn move_up(mover: &mut Mover) {
+    mover.pos.add(&V2::new(0.0, 1.0));
 }
 
-fn move_down(transform: &mut Transform) {
-    transform.translation += Vec3::new(0.0, -1.0, 0.0);
+fn move_down(mover: &mut Mover) {
+    mover.pos.add(&V2::new(0.0, -1.0));
 }
 
-fn move_left(transform: &mut Transform) {
-    transform.translation += Vec3::new(-1.0, 0.0, 0.0);
+fn move_left(mover: &mut Mover) {
+    mover.pos.add(&V2::new(1.0, 0.0));
 }
 
-fn move_right(transform: &mut Transform) {
-    transform.translation += Vec3::new(1.0, 0.0, 0.0);
+fn move_right(mover: &mut Mover) {
+    mover.pos.add(&V2::new(-1.0, 0.0));
 }
 
-fn rotate_left(transform: &mut Transform) {
-    transform.rotate_z(0.01);
-}
-
-fn rotate_right(transform: &mut Transform) {
-    transform.rotate_z(-0.01);
-}
-
-fn scale_up(transform: &mut Transform) {
-    transform.scale *= Vec3::splat(1.01);
-}
-
-fn scale_down(transform: &mut Transform) {
-    transform.scale *= Vec3::splat(0.99);
-}

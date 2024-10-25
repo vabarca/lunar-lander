@@ -1,5 +1,6 @@
 use crate::vectors::V2;
 use bevy::prelude::*;
+use bevy_vector_shapes::prelude::*;
 
 #[derive(Debug, Component, Clone)]
 pub struct Force {
@@ -34,9 +35,9 @@ pub struct Mover {
 
 impl Mover {
     pub fn origin(mass: f64) -> Mover {
-        Mover::new(mass, V2::zeros())
+        Mover::new(V2::zeros(), mass)
     }
-    pub fn new(mass: f64, pos: V2) -> Mover {
+    pub fn new(pos: V2, mass: f64) -> Mover {
         Mover {
             pos,
             vel: V2::zeros(),
@@ -55,11 +56,15 @@ impl Mover {
 
     pub fn update(&mut self) {
         self.forces.v.div(self.mass);
-        info!("f {:?}", self.forces.v);
         self.vel.add(&self.forces.v);
         self.pos.add(&self.vel);
-
         self.forces.reset();
+    }
+
+    pub fn show(&self, painter: &mut ShapePainter) {
+        painter.translate(self.pos.as_vec3());
+        painter.color = Color::WHITE;
+        painter.circle(self.mass as f32);
     }
 
     pub fn check_boundary(&mut self, window: &Window) {
@@ -68,7 +73,7 @@ impl Mover {
 
         let boundary_x = boundary.x / 2.0;
         let boundary_y = boundary.y / 2.0;
-        if self.pos.x >= boundary_x{
+        if self.pos.x >= boundary_x {
             self.pos.x -= boundary.x;
         } else if self.pos.x <= -boundary_x {
             self.pos.x += boundary.x;
@@ -76,6 +81,7 @@ impl Mover {
 
         if self.pos.y <= -boundary_y {
             self.vel.y *= -1.0;
+            self.pos.y = -boundary_y
         }
     }
 }
@@ -85,21 +91,3 @@ pub struct Player;
 
 #[derive(Component)]
 pub struct Ufo;
-
-#[derive(Component)]
-pub struct SpacecraftName(pub String);
-
-#[derive(Bundle)]
-pub struct Spacecraft {
-    pub name: SpacecraftName,
-    pub sprite: SpriteBundle,
-}
-
-impl Spacecraft {
-    pub fn new(name: String, sprite: SpriteBundle) -> Self {
-        Self {
-            name: SpacecraftName(name),
-            sprite,
-        }
-    }
-}

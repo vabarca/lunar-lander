@@ -106,7 +106,7 @@ impl V2 {
         self
     }
 
-    pub fn reset(&mut self) -> &mut Self{
+    pub fn reset(&mut self) -> &mut Self {
         self.x = 0.0;
         self.y = 0.0;
         self
