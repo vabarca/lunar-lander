@@ -26,7 +26,7 @@ impl Mover {
     }
 
     pub fn apply_force(&mut self, force: &Force) {
-        self.forces.v.add(&force.v);
+        self.forces.vec.add(&force.vec);
     }
 
     pub fn mass(&self) -> f64 {
@@ -34,8 +34,8 @@ impl Mover {
     }
 
     pub fn update(&mut self) {
-        self.forces.v.div(self.mass);
-        self.vel.add(&self.forces.v);
+        self.forces.vec.div(self.mass);
+        self.vel.add(&self.forces.vec);
         self.pos.add(&self.vel);
         self.forces.reset();
     }
@@ -46,9 +46,18 @@ impl Mover {
         painter.circle(self.mass as f32);
     }
 
+    pub fn contact(&self, window: &Window) -> bool{
+        let screen = window.resolution.physical_size().as_vec2();
+        let boundary = V2::new(screen.x as f64, screen.y as f64);
+        let boundary_y = boundary.y / 2.0;
+        //info!("{} - {} - {} - {}", self.pos.y, boundary_y, self.mass, (-boundary_y - self.mass - 1.0));
+        self.pos.y < (-boundary_y - self.mass - 1.0)
+    }
+
     pub fn check_boundary(&mut self, window: &Window) {
         let screen = window.resolution.physical_size().as_vec2();
         let boundary = V2::new(screen.x as f64, screen.y as f64);
+        const BOUNCE_LOST: f64 = -0.85;
 
         let boundary_x = boundary.x / 2.0;
         let boundary_y = boundary.y / 2.0;
@@ -59,7 +68,7 @@ impl Mover {
         }
 
         if self.pos.y <= -boundary_y {
-            self.vel.y *= -1.0;
+            self.vel.y *= BOUNCE_LOST;
             self.pos.y = -boundary_y
         }
     }

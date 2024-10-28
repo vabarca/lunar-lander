@@ -1,12 +1,24 @@
-use crate::spacecraft::{Player, Mover};
+use crate::mover::{Player, Mover};
 use crate::forces::Force;
 use bevy::app::AppExit;
 use bevy::prelude::*;
 use crate::vectors::V2;
+use bevy::window::PrimaryWindow;
 
 pub fn quit_game(mut exit: EventWriter<AppExit>) {
     info!("Quitting game ...");
     exit.send(AppExit::Success);
+}
+
+pub fn cursor_position(
+    windows: Query<&Window, With<PrimaryWindow>>,
+) {
+    // Games typically only have one window (the primary window)
+    if let Some(position) = windows.single().cursor_position() {
+        println!("Cursor is inside the primary window, at {:?}", position);
+    } else {
+        println!("Cursor is not in the game window.");
+    }
 }
 
 pub fn mouse_input_system(
@@ -15,7 +27,8 @@ pub fn mouse_input_system(
 ) {
     let mut mover = query.single_mut();
     for _ in buttons.get_pressed() {
-        let wind = Force::new(&V2::new(-1.0, 0.0));
+        let wind = Force::new(&V2::new(-10.0, 0.0));
+        //info!("Button: poss {}", button);
         mover.apply_force(&wind);
     }
 }

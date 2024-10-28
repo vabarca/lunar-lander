@@ -111,6 +111,11 @@ impl V2 {
         self.y = 0.0;
         self
     }
+
+    pub fn set_mag(&mut self, mag: f64) -> &mut Self {
+        self.normalize().mult(mag);
+        self
+    }
 }
 
 #[cfg(test)]
