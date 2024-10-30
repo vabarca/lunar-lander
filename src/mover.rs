@@ -61,15 +61,17 @@ impl Mover {
 
         let boundary_x = boundary.x / 2.0;
         let boundary_y = boundary.y / 2.0;
+
+        
         if self.pos.x >= boundary_x {
             self.pos.x -= boundary.x;
         } else if self.pos.x <= -boundary_x {
             self.pos.x += boundary.x;
         }
 
-        if self.pos.y <= -boundary_y {
+        if self.pos.y - self.mass <= -boundary_y {
             self.vel.y *= BOUNCE_LOST;
-            self.pos.y = -boundary_y
+            self.pos.y = -boundary_y + self.mass
         }
     }
 }

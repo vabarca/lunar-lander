@@ -6,7 +6,7 @@ use rand::prelude::*;
 fn setup(mut commands: Commands, mut windows: Query<&mut Window>) {
     let mut custom_camera = Camera2dBundle::default();
 
-    custom_camera.projection.scaling_mode = ScalingMode::FixedVertical(1024.0);
+    custom_camera.projection.scaling_mode = ScalingMode::FixedVertical(1280.0);
     custom_camera.transform = Transform::from_xyz(0.0, 0.0, 0.0);
 
     let mut window = windows.single_mut();
