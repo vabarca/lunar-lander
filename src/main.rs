@@ -14,14 +14,12 @@ fn setup(mut cmd: Commands, mut windows: Query<&mut Window>) {
 
     cmd.spawn((custom_camera, CustomCamera));
     cmd.spawn((Player, Mover::new(V2::new((100 ) as f64, 0.0), 40_f64)));
+
     let mut rng = rand::thread_rng();
     for _ in 1..200 {
-        let mut y: f64 = rng.gen();
-        y = y * screen.y as f64;
-        let mut x: f64 = rng.gen(); 
-        x = x * screen.x as f64;
-        let mut mass: f64 = rng.gen(); 
-        mass = mass * 10f64;
+        let x: f64 = rng.gen::<f64>() * screen.x as f64; 
+        let y: f64 = rng.gen::<f64>() * screen.y as f64;
+        let mass: f64 = rng.gen::<f64>() * 10f64; 
         cmd.spawn((Ufo, Mover::new(V2::new(x, y), mass)));
     }
 }
@@ -65,7 +63,6 @@ fn main() {
             (
                 quit_game.run_if(input_just_pressed(KeyCode::KeyQ)),
                 keyboard_input_system,
-                mouse_input_system,
                 toggle_resolution,
                 on_resize,
                 update,

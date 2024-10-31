@@ -13,7 +13,6 @@ pub fn quit_game(mut exit: EventWriter<AppExit>) {
 pub fn cursor_position(
     windows: Query<&Window, With<PrimaryWindow>>,
 ) {
-    // Games typically only have one window (the primary window)
     if let Some(position) = windows.single().cursor_position() {
         println!("Cursor is inside the primary window, at {:?}", position);
     } else {
