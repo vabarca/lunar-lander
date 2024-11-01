@@ -55,16 +55,12 @@ impl Mover {
         self.pos.y < (-boundary_y - self.mass - 2.0)
     }
 
-    pub fn check_boundary(&mut self, window: &Window) {
-        let screen = window.resolution.physical_size().as_vec2();
-        let boundary = V2::new(screen.x as f64, screen.y as f64);
+    pub fn check_boundary(&mut self) {
         const BOUNCE_LOST: f64 = -0.85;
 
-        let boundary_y = boundary.y / 2.0;
-
-        if self.pos.y - self.mass <= -boundary_y {
+        if self.pos.y - self.mass <= 0.0 {
             self.vel.y *= BOUNCE_LOST;
-            self.pos.y = -boundary_y + self.mass
+            self.pos.y = self.mass
         }
     }
 }
@@ -75,22 +71,26 @@ pub struct Player;
 #[derive(Component)]
 pub struct Ufo;
 
-pub fn spawn_player(cmd: &mut Commands) {
-    cmd.spawn((Player, Mover::new(V2::new(0.0, 0.0), 40_f64)));
+pub fn spawn_player(cmd: &mut Commands, rect: &Rect) {
+    let mut rng = rand::thread_rng();
+    let mass: f64 = 40f64;
+    let diff = rect.max - rect.min;
+    let x: f64 = rng.gen::<f64>() * diff.x as f64 + rect.min.x as f64;
+    let y: f64 = rng.gen::<f64>() * diff.y as f64 + rect.min.y as f64  + mass;
+
+
+    cmd.spawn((Player, Mover::new(V2::new(x, y), mass)));
 }
 
-pub fn spawn_ufos(cmd: &mut Commands, window: &mut Window) {
+pub fn spawn_ufos(cmd: &mut Commands, rect: &Rect) {
     let mut rng = rand::thread_rng();
-    window.resizable = false;
-    let screen = window.resolution.physical_size().as_vec2();
+    let diff = rect.max - rect.min;
 
     for _ in 0..10 {
-        let _x = rng.gen::<f64>();
-        let _y = rng.gen::<f64>();
-        let x: f64 = _x * screen.x as f64;
-        let y: f64 = _y * screen.y as f64;
         let mass: f64 = rng.gen::<f64>() * 10f64;
-        info!("New ufo x:{}({}) - y:{}({})", x, _x, y, _y);
+        let x: f64 = rng.gen::<f64>() * diff.x as f64 + rect.min.x as f64;
+        let y: f64 = rng.gen::<f64>() * diff.y as f64 + rect.min.y as f64  + mass;
+        info!("New ufo x:{} - y:{}", x, y);
         cmd.spawn((Ufo, Mover::new(V2::new(x, y), mass)));
     }
 }

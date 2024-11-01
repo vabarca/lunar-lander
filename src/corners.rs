@@ -11,16 +11,16 @@ pub struct CornerTexts;
 
 pub fn spawn_corners(
     cmd: &mut Commands,
-    window: &mut Window,
+    rect: &Rect,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     let shape = Mesh2dHandle(meshes.add(Annulus::new(2.0, 8.0)));
     let position = [
-        Transform::from_xyz(0.0, 0.0, 0.0),
-        Transform::from_xyz(0.0, window.resolution.height(), 0.0),
-        Transform::from_xyz(window.resolution.width(), window.resolution.height(), 0.0),
-        Transform::from_xyz(window.resolution.width(), 0.0, 0.0),
+        Transform::from_translation(rect.min.extend(0.0)),
+        Transform::from_xyz(rect.min.x, rect.max.y, 0.0),
+        Transform::from_translation(rect.max.extend(0.0)),
+        Transform::from_xyz(rect.max.x, rect.min.y, 0.0),
     ];
 
     for i in 0..4 {

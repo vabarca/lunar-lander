@@ -9,11 +9,16 @@ fn setup(
     materials: ResMut<Assets<ColorMaterial>>,
 ) {
     let mut window = windows.single_mut();
+    window.resizable = false;
+    
+
+    let screen = window.resolution.physical_size().as_vec2();
+    let rect =  Rect::new(0.0, 0.0, screen.x, screen.y);
 
     spawn_cameras(&mut cmd, &mut window);
-    spawn_corners(&mut cmd, &mut window, meshes, materials);
-    spawn_player(&mut cmd);
-    spawn_ufos(&mut cmd, &mut window);
+    spawn_corners(&mut cmd, &rect, meshes, materials);
+    spawn_player(&mut cmd, &rect);
+    spawn_ufos(&mut cmd, &rect);
 }
 
 fn update(windows: Query<&Window>, mut mover_query: Query<&mut Mover>, mut painter: ShapePainter) {
@@ -28,7 +33,7 @@ fn update(windows: Query<&Window>, mut mover_query: Query<&mut Mover>, mut paint
             let friction = Friction::new(&mover.vel, 0.1);
             mover.apply_force(&friction.f);
         }
-        mover.check_boundary(&window);
+        mover.check_boundary();
 
         mover.update();
         mover.show(&mut painter);
