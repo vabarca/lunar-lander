@@ -3,3 +3,4 @@ pub mod mover;
 pub mod vectors;
 pub mod forces;
 pub mod cameras;
+pub mod shapes;

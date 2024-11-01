@@ -1,7 +1,7 @@
-use bevy::{prelude::*, window::WindowResized};
+use bevy::{prelude::*, sprite::Wireframe2dConfig, window::WindowResized};
 
 #[derive(Component)]
-pub struct CustomCamera;
+pub struct MainCamera;
 
 /// Marker component for the text that displays the current resolution.
 #[derive(Component)]
@@ -45,21 +45,27 @@ pub fn toggle_resolution(
     keys: Res<ButtonInput<KeyCode>>,
     mut windows: Query<&mut Window>,
     resolution: Res<ResolutionSettings>,
+    //mut transform_query: Query<&mut Transform, With<MainCamera>>,
 ) {
+    //let mut transform = transform_query.single_mut();
     let mut window = windows.single_mut();
 
     if keys.just_pressed(KeyCode::Digit1) {
         let res = resolution.small;
         window.resolution.set(res.x, res.y);
+      //  transform.translation = Vec3::new(res.x/2.0, res.y/2.0, 0.0);
     }
     if keys.just_pressed(KeyCode::Digit2) {
         let res = resolution.medium;
         window.resolution.set(res.x, res.y);
+        //transform.translation = Vec3::new(res.x/2.0, res.y/2.0, 0.0);
     }
     if keys.just_pressed(KeyCode::Digit3) {
         let res = resolution.large;
         window.resolution.set(res.x, res.y);
+       // transform.translation = Vec3::new(res.x/2.0, res.y/2.0, 0.0);
     }
+
 }
 
 /// This system shows how to respond to a window being resized.
@@ -74,3 +80,19 @@ pub fn on_resize(
         text.sections[0].value = format!("{:.1} x {:.1}", e.width, e.height);
     }
 }
+
+pub fn toggle_wireframe(
+    mut wireframe_config: ResMut<Wireframe2dConfig>,
+    keyboard: Res<ButtonInput<KeyCode>>,
+) {
+    if keyboard.just_pressed(KeyCode::Space) {
+        wireframe_config.global = !wireframe_config.global;
+    }
+}
+
+pub fn spawn_cameras(
+    cmd: &mut Commands, 
+){
+    cmd.spawn((Camera2dBundle::default(), MainCamera));
+}
+
