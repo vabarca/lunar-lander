@@ -61,7 +61,7 @@ impl V2 {
         }
     }
 
-    pub fn abs(&self) -> f64 {
+    pub fn mag(&self) -> f64 {
         (self.x.powf(2_f64) + self.y.powf(2_f64)).sqrt()
     }
 
@@ -96,7 +96,7 @@ impl V2 {
     }
 
     pub fn normalize(&mut self) -> &mut Self {
-        self.div(self.abs())
+        self.div(self.mag())
     }
 
     pub fn as_vec3(&self) -> Vec3 {
@@ -114,7 +114,7 @@ impl V2 {
     }
 
     pub fn limit(&mut self, max: f64) -> &mut Self {
-        if self.abs() > max {
+        if self.mag() > max {
             self.normalize().mult(max);
         }
         self
@@ -140,12 +140,12 @@ mod tests {
     #[test]
     fn v2_abs() {
         let vector = V2::new(4.0, 3.0);
-        assert_eq!(vector.abs(), 5.0);
+        assert_eq!(vector.mag(), 5.0);
     }
 
     #[test]
     fn v2_normalize() {
         let mut vector = V2::new(4.0, 3.0);
-        assert_eq!(vector.normalize().abs(), 1.0);
+        assert_eq!(vector.normalize().mag(), 1.0);
     }
 }

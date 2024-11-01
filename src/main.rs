@@ -26,14 +26,22 @@ fn update(
         let mass = mover.mass();
 
         mover.apply_force(&Force::gravity(mass, 0.05));
-        if mover.ground_contact() {
-            let friction = Friction::new(&mover.vel, 0.1);
-            mover.apply_force(&friction.f);
-        }
         mover.check_boundary();
-
         mover.update();
         mover.show(&mut transform);
+    }
+}
+
+fn update_friction(
+    mut mover_query: Query<&mut Mover, With<Player>>
+) {
+    for mut mover in &mut mover_query {
+
+        if mover.ground_contact() {
+            info!("Friction");
+            let friction = Friction::new(&mover.vel, 0.3);
+            mover.apply_force(&friction.f);
+        }
     }
 }
 
@@ -56,6 +64,8 @@ fn main() {
                 on_resize,
                 update,
                 toggle_wireframe,
+                mouse_input_system,
+                update_friction,
             ),
         )
         .run();

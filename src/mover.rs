@@ -46,13 +46,13 @@ impl Mover {
     }
 
     pub fn ground_contact(&self) -> bool {
-        self.pos.y < self.mass - 2.0
+        self.pos.y <= self.mass
     }
 
     pub fn check_boundary(&mut self) {
         const BOUNCE_LOST: f64 = -0.85;
 
-        if self.pos.y - self.mass <= 0.0 {
+        if self.ground_contact() {
             self.vel.y *= BOUNCE_LOST;
             self.pos.y = self.mass
         }
@@ -66,12 +66,12 @@ pub struct Player;
 pub struct Ufo;
 
 
-fn generate_random_coordinates(rect: &Rect, mass: f64) -> V2 {
+fn generate_random_coordinates(rect: &Rect, _mass: f64) -> V2 {
     let mut rng = rand::thread_rng();
     let diff = rect.max - rect.min;
     let x: f64 = rng.gen::<f64>() * diff.x as f64 + rect.min.x as f64;
-    let y: f64 = rng.gen::<f64>() * diff.y as f64 + rect.min.y as f64  + mass;
-    V2::new(x, y)
+    //let y: f64 = rng.gen::<f64>() * diff.y as f64 + rect.min.y as f64  + mass;
+    V2::new(x, diff.y as f64 + (rect.min.y as f64 * 0.7))
 }
 
 pub fn spawn_ufos(
@@ -92,7 +92,7 @@ pub fn spawn_ufos(
             MaterialMesh2dBundle {
                 mesh: Mesh2dHandle(meshes.add(Circle::new(mass as f32))),
                 material: materials.add(color),
-                transform: Transform::from_translation(pos.as_vec3()),
+                transform: Transform::from_translation(pos.as_vec2().extend(1.0)),
                 ..default()
             },
         ));
@@ -113,7 +113,7 @@ pub fn spawn_player(
         MaterialMesh2dBundle {
             mesh: Mesh2dHandle(meshes.add(Circle::new(mass as f32))),
             material: materials.add(Color::hsl(100.0, 0.95, 0.7)),
-            transform: Transform::from_translation(pos.as_vec3()),
+            transform: Transform::from_translation(pos.as_vec2().extend(-1.0)),
             ..default()
         },
     ));
