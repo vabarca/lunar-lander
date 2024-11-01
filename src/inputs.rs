@@ -1,8 +1,8 @@
-use crate::mover::{Player, Mover};
 use crate::forces::Force;
+use crate::mover::{Mover, Player};
+use crate::vectors::V2;
 use bevy::app::AppExit;
 use bevy::prelude::*;
-use crate::vectors::V2;
 use bevy::window::PrimaryWindow;
 
 pub fn quit_game(mut exit: EventWriter<AppExit>) {
@@ -10,9 +10,7 @@ pub fn quit_game(mut exit: EventWriter<AppExit>) {
     exit.send(AppExit::Success);
 }
 
-pub fn cursor_position(
-    windows: Query<&Window, With<PrimaryWindow>>,
-) {
+pub fn cursor_position(windows: Query<&Window, With<PrimaryWindow>>) {
     if let Some(position) = windows.single().cursor_position() {
         println!("Cursor is inside the primary window, at {:?}", position);
     } else {
@@ -75,4 +73,3 @@ fn move_left(mover: &mut Mover) {
 fn move_right(mover: &mut Mover) {
     mover.pos.add(&V2::new(-1.0, 0.0));
 }
-

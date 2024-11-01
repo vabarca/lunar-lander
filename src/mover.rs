@@ -1,5 +1,5 @@
-use crate::vectors::V2;
 use crate::forces::Force;
+use crate::vectors::V2;
 use bevy::prelude::*;
 use bevy_vector_shapes::prelude::*;
 use rand::prelude::*;
@@ -47,7 +47,7 @@ impl Mover {
         painter.circle(self.mass as f32);
     }
 
-    pub fn contact(&self, window: &Window) -> bool{
+    pub fn contact(&self, window: &Window) -> bool {
         let screen = window.resolution.physical_size().as_vec2();
         let boundary = V2::new(screen.x as f64, screen.y as f64);
         let boundary_y = boundary.y / 2.0;
@@ -62,7 +62,6 @@ impl Mover {
 
         let boundary_y = boundary.y / 2.0;
 
-        
         if self.pos.y - self.mass <= -boundary_y {
             self.vel.y *= BOUNCE_LOST;
             self.pos.y = -boundary_y + self.mass
@@ -76,16 +75,11 @@ pub struct Player;
 #[derive(Component)]
 pub struct Ufo;
 
-pub fn spawn_player(
-    cmd: &mut Commands, 
-){
+pub fn spawn_player(cmd: &mut Commands) {
     cmd.spawn((Player, Mover::new(V2::new(0.0, 0.0), 40_f64)));
 }
 
-pub fn spawn_ufos(
-    cmd: &mut Commands, 
-    window: &mut Window
-){
+pub fn spawn_ufos(cmd: &mut Commands, window: &mut Window) {
     let mut rng = rand::thread_rng();
     window.resizable = false;
     let screen = window.resolution.physical_size().as_vec2();
@@ -93,9 +87,9 @@ pub fn spawn_ufos(
     for _ in 0..10 {
         let _x = rng.gen::<f64>();
         let _y = rng.gen::<f64>();
-        let x: f64 = _x * screen.x as f64; 
+        let x: f64 = _x * screen.x as f64;
         let y: f64 = _y * screen.y as f64;
-        let mass: f64 = rng.gen::<f64>() * 10f64; 
+        let mass: f64 = rng.gen::<f64>() * 10f64;
         info!("New ufo x:{}({}) - y:{}({})", x, _x, y, _y);
         cmd.spawn((Ufo, Mover::new(V2::new(x, y), mass)));
     }

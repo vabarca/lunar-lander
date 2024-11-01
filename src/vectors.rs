@@ -19,11 +19,17 @@ impl V2 {
     }
 
     pub fn from_vec3(v: &Vec3) -> V2 {
-        V2 { x : v.x as f64, y : v.y as f64}
+        V2 {
+            x: v.x as f64,
+            y: v.y as f64,
+        }
     }
 
-    pub fn from_vec2(v : &Vec2) -> V2 {
-        V2 { x : v.x as f64, y : v.y as f64}
+    pub fn from_vec2(v: &Vec2) -> V2 {
+        V2 {
+            x: v.x as f64,
+            y: v.y as f64,
+        }
     }
 
     pub fn zeros() -> V2 {

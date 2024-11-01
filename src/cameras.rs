@@ -31,7 +31,7 @@ pub fn setup_ui(mut cmd: Commands) {
             TextBundle::from_section(
                 "Resolution",
                 TextStyle {
-                    font_size: 50.0,
+                    font_size: 20.0,
                     ..default()
                 },
             ),
@@ -53,7 +53,7 @@ pub fn toggle_resolution(
     if keys.just_pressed(KeyCode::Digit1) {
         let res = resolution.small;
         window.resolution.set(res.x, res.y);
-      //  transform.translation = Vec3::new(res.x/2.0, res.y/2.0, 0.0);
+        //  transform.translation = Vec3::new(res.x/2.0, res.y/2.0, 0.0);
     }
     if keys.just_pressed(KeyCode::Digit2) {
         let res = resolution.medium;
@@ -63,9 +63,8 @@ pub fn toggle_resolution(
     if keys.just_pressed(KeyCode::Digit3) {
         let res = resolution.large;
         window.resolution.set(res.x, res.y);
-       // transform.translation = Vec3::new(res.x/2.0, res.y/2.0, 0.0);
+        // transform.translation = Vec3::new(res.x/2.0, res.y/2.0, 0.0);
     }
-
 }
 
 /// This system shows how to respond to a window being resized.
@@ -90,9 +89,12 @@ pub fn toggle_wireframe(
     }
 }
 
-pub fn spawn_cameras(
-    cmd: &mut Commands, 
-){
-    cmd.spawn((Camera2dBundle::default(), MainCamera));
+pub fn spawn_cameras(cmd: &mut Commands, window: &mut Window) {
+    let mut camera = Camera2dBundle::default();
+    camera.transform = Transform::from_xyz(
+        window.resolution.width() / 2.0,
+        window.resolution.height() / 2.0,
+        0.0,
+    );
+    cmd.spawn((camera, MainCamera));
 }
-
