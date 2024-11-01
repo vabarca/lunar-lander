@@ -89,8 +89,8 @@ pub fn spawn_ufos(
     let mut rng = rand::thread_rng();
     window.resizable = false;
     let screen = window.resolution.physical_size().as_vec2();
-    
-    for _ in 1..10 {
+
+    for _ in 0..10 {
         let _x = rng.gen::<f64>();
         let _y = rng.gen::<f64>();
         let x: f64 = _x * screen.x as f64; 

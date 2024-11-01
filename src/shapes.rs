@@ -10,7 +10,7 @@ pub fn spawn_corners(
     mut materials: ResMut<Assets<ColorMaterial>>,
     window: &mut Window
 ){
-        let shape = Mesh2dHandle(meshes.add(Annulus::new(2.0, 4.0)));
+        let shape = Mesh2dHandle(meshes.add(Annulus::new(2.0, 8.0)));
         let position = [
             Transform::from_xyz(
                 0.0,
@@ -34,8 +34,9 @@ pub fn spawn_corners(
             ),
         ];
     
-        for i in 1..4 {
+        for i in 0..4 {
             let color = Color::hsl(360. * i as f32 / 4 as f32, 0.95, 0.7);
+            info!("corner {}", i);
     
             cmd.spawn((Corner, MaterialMesh2dBundle {
                 mesh: shape.clone(),
