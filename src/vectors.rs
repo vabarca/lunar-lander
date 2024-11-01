@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use rand::prelude::*;
+use std::fmt;
 
 pub fn f64_to_f32(x: f64) -> f32 {
     let y = x as f32;
@@ -129,6 +130,12 @@ impl V2 {
     pub fn set_mag(&mut self, mag: f64) -> &mut Self {
         self.normalize().mult(mag);
         self
+    }
+}
+
+impl fmt::Display for V2 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "({:.2}, {:.2})", self.x, self.y)
     }
 }
 

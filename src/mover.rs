@@ -1,4 +1,4 @@
-use crate::forces::Force;
+use crate::forces::{Force, Friction};
 use crate::vectors::V2;
 use bevy::prelude::*;
 use bevy::sprite::{MaterialMesh2dBundle, Mesh2dHandle};
@@ -45,8 +45,19 @@ impl Mover {
         tranform.translation = self.pos.as_vec3();
     }
 
-    pub fn ground_contact(&self) -> bool {
+    fn surface_contact(&self) -> bool {
+        self.pos.y <= 500.0
+    }
+
+    fn ground_contact(&self) -> bool {
         self.pos.y <= self.mass
+    }
+
+    pub fn check_surface(&mut self, c : f64) {
+        if self.surface_contact() {
+            let friction = Friction::new(&self.vel, c);
+            self.apply_force(&friction.f);
+        }
     }
 
     pub fn check_boundary(&mut self) {
@@ -83,8 +94,9 @@ pub fn spawn_ufos(
     let mut rng = rand::thread_rng();
 
     for _ in 0..10 {
-        let mass: f64 = rng.gen::<f64>() * 10f64;
+        let mass: f64 = rng.gen::<f64>() * 10f64 + 1.0;
         let pos = generate_random_coordinates(rect, mass);
+        info!("Ufo: {} - {}", pos, mass);
         let color = Color::hsl(250.0, 0.95, 0.7);
         cmd.spawn((
             Ufo, 

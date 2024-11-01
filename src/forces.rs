@@ -30,7 +30,8 @@ pub struct Friction {
 impl Friction {
     pub fn new(vel: &V2, c: f64) -> Friction {
         let mut friction = Friction { f: Force::new(vel) };
-        friction.f.vec.mult(-1.0).set_mag(c);
+        let speed = vel.mag();
+        friction.f.vec.mult(-1.0).set_mag(c * speed * speed);
         friction
     }
 }
