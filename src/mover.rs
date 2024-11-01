@@ -47,12 +47,8 @@ impl Mover {
         painter.circle(self.mass as f32);
     }
 
-    pub fn contact(&self, window: &Window) -> bool {
-        let screen = window.resolution.physical_size().as_vec2();
-        let boundary = V2::new(screen.x as f64, screen.y as f64);
-        let boundary_y = boundary.y / 2.0;
-        //info!("{} - {} - {} - {}", self.pos.y, boundary_y, self.mass, (-boundary_y - self.mass - 1.0));
-        self.pos.y < (-boundary_y - self.mass - 2.0)
+    pub fn ground_contact(&self) -> bool {
+        self.pos.y < self.mass - 2.0
     }
 
     pub fn check_boundary(&mut self) {
@@ -71,7 +67,10 @@ pub struct Player;
 #[derive(Component)]
 pub struct Ufo;
 
-pub fn spawn_player(cmd: &mut Commands, rect: &Rect) {
+pub fn spawn_player(
+    cmd: &mut Commands, 
+    rect: &Rect
+) {
     let mut rng = rand::thread_rng();
     let mass: f64 = 40f64;
     let diff = rect.max - rect.min;

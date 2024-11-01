@@ -10,26 +10,24 @@ fn setup(
 ) {
     let mut window = windows.single_mut();
     window.resizable = false;
-    
 
     let screen = window.resolution.physical_size().as_vec2();
     let rect =  Rect::new(0.0, 0.0, screen.x, screen.y);
 
-    spawn_cameras(&mut cmd, &mut window);
+    spawn_cameras(&mut cmd, &rect);
     spawn_corners(&mut cmd, &rect, meshes, materials);
     spawn_player(&mut cmd, &rect);
     spawn_ufos(&mut cmd, &rect);
 }
 
-fn update(windows: Query<&Window>, mut mover_query: Query<&mut Mover>, mut painter: ShapePainter) {
+fn update(mut mover_query: Query<&mut Mover>, mut painter: ShapePainter) {
     let start_pos = painter.transform;
-    let window = &windows.single();
     for mut mover in &mut mover_query {
         painter.transform = start_pos;
         let mass = mover.mass();
 
         mover.apply_force(&Force::gravity(mass, 0.05));
-        if mover.contact(&window) {
+        if mover.ground_contact() {
             let friction = Friction::new(&mover.vel, 0.1);
             mover.apply_force(&friction.f);
         }

@@ -89,11 +89,15 @@ pub fn toggle_wireframe(
     }
 }
 
-pub fn spawn_cameras(cmd: &mut Commands, window: &mut Window) {
+pub fn spawn_cameras(
+    cmd: &mut Commands, 
+    rect: &Rect
+) {
     let mut camera = Camera2dBundle::default();
+    let diff = rect.max - rect.min;
     camera.transform = Transform::from_xyz(
-        window.resolution.width() / 2.0,
-        window.resolution.height() / 2.0,
+        diff.x / 2.0 + rect.min.x,
+        diff.y / 2.0 + rect.min.y,
         0.0,
     );
     cmd.spawn((camera, MainCamera));
