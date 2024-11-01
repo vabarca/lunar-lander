@@ -5,8 +5,8 @@ use lunar_lander::{cameras::*, corners::*, forces::*, inputs::*, mover::*};
 fn setup(
     mut cmd: Commands,
     mut windows: Query<&mut Window>,
-    meshes: ResMut<Assets<Mesh>>,
-    materials: ResMut<Assets<ColorMaterial>>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     let mut window = windows.single_mut();
     window.resizable = false;
@@ -15,9 +15,9 @@ fn setup(
     let rect =  Rect::new(0.0, 0.0, screen.x, screen.y);
 
     spawn_cameras(&mut cmd, &rect);
-    spawn_corners(&mut cmd, &rect, meshes, materials);
-    spawn_player(&mut cmd, &rect);
-    spawn_ufos(&mut cmd, &rect);
+    spawn_corners(&mut cmd, &rect, &mut meshes, &mut materials);
+    spawn_player(&mut cmd, &rect, &mut meshes, &mut materials);
+    spawn_ufos(&mut cmd, &rect, &mut meshes, &mut materials);
 }
 
 fn update(mut mover_query: Query<&mut Mover>, mut painter: ShapePainter) {

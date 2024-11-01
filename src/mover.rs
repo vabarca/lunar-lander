@@ -1,6 +1,7 @@
 use crate::forces::Force;
 use crate::vectors::V2;
 use bevy::prelude::*;
+use bevy::sprite::{MaterialMesh2dBundle, Mesh2dHandle};
 use bevy_vector_shapes::prelude::*;
 use rand::prelude::*;
 
@@ -67,29 +68,57 @@ pub struct Player;
 #[derive(Component)]
 pub struct Ufo;
 
-pub fn spawn_player(
-    cmd: &mut Commands, 
-    rect: &Rect
-) {
+
+fn generate_random_coordinates(rect: &Rect, mass: f64) -> V2 {
     let mut rng = rand::thread_rng();
-    let mass: f64 = 40f64;
     let diff = rect.max - rect.min;
     let x: f64 = rng.gen::<f64>() * diff.x as f64 + rect.min.x as f64;
     let y: f64 = rng.gen::<f64>() * diff.y as f64 + rect.min.y as f64  + mass;
-
-
-    cmd.spawn((Player, Mover::new(V2::new(x, y), mass)));
+    V2::new(x, y)
 }
 
-pub fn spawn_ufos(cmd: &mut Commands, rect: &Rect) {
+pub fn spawn_ufos(
+    cmd: &mut Commands, 
+    rect: &Rect,
+    meshes: &mut ResMut<Assets<Mesh>>,
+    materials: &mut ResMut<Assets<ColorMaterial>>
+) {
     let mut rng = rand::thread_rng();
-    let diff = rect.max - rect.min;
 
     for _ in 0..10 {
         let mass: f64 = rng.gen::<f64>() * 10f64;
-        let x: f64 = rng.gen::<f64>() * diff.x as f64 + rect.min.x as f64;
-        let y: f64 = rng.gen::<f64>() * diff.y as f64 + rect.min.y as f64  + mass;
-        info!("New ufo x:{} - y:{}", x, y);
-        cmd.spawn((Ufo, Mover::new(V2::new(x, y), mass)));
+        let pos = generate_random_coordinates(rect, mass);
+        let color = Color::hsl(250.0, 0.95, 0.7);
+        cmd.spawn((
+            Ufo, 
+            Mover::new(pos.clone(), mass),
+            MaterialMesh2dBundle {
+                mesh: Mesh2dHandle(meshes.add(Circle::new(mass as f32))),
+                material: materials.add(color),
+                transform: Transform::from_translation(pos.as_vec3()),
+                ..default()
+            },
+        ));
     }
+}
+
+pub fn spawn_player(
+    cmd: &mut Commands,
+    rect: &Rect,
+    meshes: &mut ResMut<Assets<Mesh>>,
+    materials: &mut ResMut<Assets<ColorMaterial>>,
+) {
+    let mass: f64 = 40f64;
+    let pos = generate_random_coordinates(rect, mass);
+    cmd.spawn((
+        Player,
+        Mover::new(pos.clone(), mass),
+        MaterialMesh2dBundle {
+            mesh: Mesh2dHandle(meshes.add(Circle::new(mass as f32))),
+            material: materials.add(Color::hsl(100.0, 0.95, 0.7)),
+            transform: Transform::from_translation(pos.as_vec3()),
+            ..default()
+        },
+    ));
+    
 }

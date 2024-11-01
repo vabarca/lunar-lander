@@ -12,8 +12,8 @@ pub struct CornerTexts;
 pub fn spawn_corners(
     cmd: &mut Commands,
     rect: &Rect,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    meshes: &mut ResMut<Assets<Mesh>>,
+    materials: &mut ResMut<Assets<ColorMaterial>>,
 ) {
     let shape = Mesh2dHandle(meshes.add(Annulus::new(2.0, 8.0)));
     let position = [
