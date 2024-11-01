@@ -2,7 +2,6 @@ use crate::forces::Force;
 use crate::vectors::V2;
 use bevy::prelude::*;
 use bevy::sprite::{MaterialMesh2dBundle, Mesh2dHandle};
-use bevy_vector_shapes::prelude::*;
 use rand::prelude::*;
 
 /// This will be used to identify the main player entity
@@ -42,10 +41,8 @@ impl Mover {
         self.forces.reset();
     }
 
-    pub fn show(&self, painter: &mut ShapePainter) {
-        painter.translate(self.pos.as_vec3());
-        painter.color = Color::WHITE;
-        painter.circle(self.mass as f32);
+    pub fn show(&self, tranform: &mut Transform) {
+        tranform.translation = self.pos.as_vec3();
     }
 
     pub fn ground_contact(&self) -> bool {

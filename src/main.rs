@@ -1,5 +1,4 @@
 use bevy::{input::common_conditions::input_just_pressed, prelude::*, sprite::Wireframe2dPlugin};
-use bevy_vector_shapes::prelude::*;
 use lunar_lander::{cameras::*, corners::*, forces::*, inputs::*, mover::*};
 
 fn setup(
@@ -20,10 +19,10 @@ fn setup(
     spawn_ufos(&mut cmd, &rect, &mut meshes, &mut materials);
 }
 
-fn update(mut mover_query: Query<&mut Mover>, mut painter: ShapePainter) {
-    let start_pos = painter.transform;
-    for mut mover in &mut mover_query {
-        painter.transform = start_pos;
+fn update(
+    mut mover_query: Query<(&mut Mover, &mut Transform)>
+) {
+    for (mut mover, mut transform) in &mut mover_query {
         let mass = mover.mass();
 
         mover.apply_force(&Force::gravity(mass, 0.05));
@@ -34,7 +33,7 @@ fn update(mut mover_query: Query<&mut Mover>, mut painter: ShapePainter) {
         mover.check_boundary();
 
         mover.update();
-        mover.show(&mut painter);
+        mover.show(&mut transform);
     }
 }
 
@@ -46,7 +45,6 @@ fn main() {
             small: Vec2::new(800.0, 600.0),
         })
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
-        .add_plugins(Shape2dPlugin::default())
         .add_plugins(Wireframe2dPlugin)
         .add_systems(Startup, (setup, setup_ui))
         .add_systems(

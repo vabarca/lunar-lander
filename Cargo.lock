@@ -179,12 +179,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "any_vec"
-version = "0.14.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34cd60c5e3152cef0a592f1b296f1cc93715d89d2551d85315828c3a09575ff4"
-
-[[package]]
 name = "anyhow"
 version = "1.0.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1139,21 +1133,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy_vector_shapes"
-version = "0.8.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7c773b8c8ce29b2cec9627bd4a7b1f990ba78ab73429420f61a2f32e4ba517da"
-dependencies = [
- "any_vec",
- "bevy",
- "bitfield",
- "bitflags 2.6.0",
- "nonmax",
- "smallvec",
- "wgpu",
-]
-
-[[package]]
 name = "bevy_window"
 version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1235,12 +1214,6 @@ name = "bit_field"
 version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dc827186963e592360843fb5ba4b973e145841266c1357f7180c43526f2e5b61"
-
-[[package]]
-name = "bitfield"
-version = "0.15.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c821a6e124197eb56d907ccc2188eab1038fb919c914f47976e64dd8dbc855d1"
 
 [[package]]
 name = "bitflags"
@@ -2595,7 +2568,6 @@ name = "lunar-lander"
 version = "0.1.0"
 dependencies = [
  "bevy",
- "bevy_vector_shapes",
  "image",
  "libnoise",
  "num-complex",
