@@ -63,7 +63,11 @@ impl V2 {
     }
 
     pub fn mag(&self) -> f64 {
-        (self.x.powf(2_f64) + self.y.powf(2_f64)).sqrt()
+        self.pow2_mag().sqrt()
+    }
+
+    pub fn pow2_mag(&self) -> f64 {
+        self.x.powf(2_f64) + self.y.powf(2_f64)
     }
 
     pub fn dot(&mut self, v: &V2) -> f64 {
