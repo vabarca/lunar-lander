@@ -21,17 +21,33 @@ fn setup(
 }
 
 fn update(
-    mut player_query: Query<(&mut Mover, &mut Transform), With<Player>>,
-    attractor_query: Query<&Attractor>
+    mut players_query: Query<(&mut Mover, &mut Transform), With<Player>>,
+    attractors_query: Query<&Attractor>
 ) {
-    let (mut player, mut player_transform) = player_query.single_mut();
-    let attractor = attractor_query.single();
+    let (mut player, mut player_transform) = players_query.single_mut();
+    let attractor = attractors_query.single();
     
     let attration = attractor.attract(&player);
 
     player.apply_force(attration);
     player.update();
     player.show(&mut player_transform);
+}
+
+fn update_ufos(
+    mut ufos_query: Query<(&mut Mover, &mut Transform), With<Ufo>>,
+    attractors_query: Query<&Attractor>
+) {
+    let attractor = attractors_query.single();
+
+    for (mut ufo, mut ufo_transform) in &mut ufos_query {
+
+        let attration = attractor.attract(&ufo);
+
+        ufo.apply_force(attration);
+        ufo.update();
+        ufo.show(&mut ufo_transform);
+    }
 }
 
 
@@ -53,6 +69,7 @@ fn main() {
                 toggle_resolution,
                 on_resize,
                 update,
+                update_ufos,
                 toggle_wireframe,
             ),
         )
