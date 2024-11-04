@@ -11,7 +11,8 @@ pub struct Body {
     pub pos: V2,
     pub vel: V2,
     pub forces: Force,
-    mass: f64,
+    pub radius: f64,
+    pub mass: f64,
 }
 
 impl Body {
@@ -23,16 +24,13 @@ impl Body {
             pos,
             vel: V2::zeros(),
             forces: Force::zero(),
+            radius,
             mass: radius * radius * 3.141516,
         }
     }
 
     pub fn apply_force(&mut self, force: Force) {
         self.forces.vec.add(&force.vec);
-    }
-
-    pub fn mass(&self) -> f64 {
-        self.mass
     }
 
     pub fn update(&mut self) {
@@ -48,6 +46,18 @@ impl Body {
 
     fn ground_contact(&self) -> bool {
         self.pos.y <= self.mass
+    }
+
+    fn body_contact(&mut self, body : &Body) -> bool {
+        let diff = body.pos - self.pos;
+        diff.mag() <= self.radius + body.radius
+    }
+
+    pub fn check_collitions(&mut self, body : &Body){
+        if self.body_contact(body){
+            const BOUNCE_LOST : f64 = -0.9;
+            self.vel.mult(BOUNCE_LOST);
+        }
     }
 
     pub fn check_boundary(&mut self) {
@@ -69,12 +79,12 @@ impl Body {
         distance
     }
 
-    pub fn be_attracted(&mut self, mover : &Body){
+    pub fn be_attracted(&mut self, body : &Body){
         const G :f64 = 800.0;
-        let mut force = mover.pos - self.pos;
-        let min_distance = self.mass + mover.mass();
+        let mut force = body.pos - self.pos;
+        let min_distance = self.mass + body.mass;
         let distance = Body::constrain(force.mag(),min_distance, min_distance * 2.0);
-        let mag =  G * self.mass() * mover.mass() / (distance * distance);
+        let mag =  G * self.mass * body.mass / (distance * distance);
         force.set_mag(mag);
         self.apply_force(Force::new(&force));
     }
