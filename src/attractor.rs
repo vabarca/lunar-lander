@@ -34,11 +34,22 @@ impl Attractor {
         self.mass
     }
 
+    fn constrain(distance: f64, min: f64, max :f64) -> f64{
+        if distance < min {
+            return min
+        }
+        if distance > max {
+            return max
+        }
+        distance
+    }
+
     pub fn attract(&self, mover : &Mover) -> Force {
-        const G :f64 = 1.0;
+        const G :f64 = 20.0;
         let mut force = self.pos - mover.pos;
-        let pow2_distance = force.pow2_mag();
-        let mag =  G * self.mass() * mover.mass() / pow2_distance;
+        let min_distance = self.mass + mover.mass();
+        let distance = Attractor::constrain(force.mag(),min_distance, min_distance * 2.0);
+        let mag =  G * self.mass() * mover.mass() / (distance * distance);
         info!("{}", mag);
         force.set_mag(mag);
         Force::new(&force)

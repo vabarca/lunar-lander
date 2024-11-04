@@ -1,5 +1,5 @@
 use bevy::{input::common_conditions::input_just_pressed, prelude::*, sprite::Wireframe2dPlugin};
-use lunar_lander::{cameras::*, corners::*, forces::*, inputs::*, mover::*, attractor::*};
+use lunar_lander::{cameras::*, corners::*, inputs::*, mover::*, attractor::*};
 
 fn setup(
     mut cmd: Commands,
