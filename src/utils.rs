@@ -7,6 +7,10 @@ pub fn random_coordinates(rect: &Rect) -> V2 {
     V2::new(random_x_coordinate(rect), random_y_coordinate(rect))
 }
 
+pub fn middle_coordinates(rect: &Rect) -> V2 {
+    let diff = rect.max - rect.min;
+    V2::new(diff.x as f64/2.0, diff.y as f64/2.0)
+}
 
 pub fn random_x_coordinate(rect: &Rect) -> f64 {
     let mut rng = rand::thread_rng();

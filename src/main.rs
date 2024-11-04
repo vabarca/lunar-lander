@@ -1,5 +1,5 @@
 use bevy::{input::common_conditions::input_just_pressed, prelude::*, sprite::Wireframe2dPlugin};
-use lunar_lander::{attractor::*, cameras::*, corners::*, inputs::*, mover::*};
+use lunar_lander::{cameras::*, corners::*, inputs::*, mover::*};
 
 fn setup(
     mut cmd: Commands,
@@ -16,40 +16,29 @@ fn setup(
     spawn_cameras(&mut cmd, &rect);
     spawn_corners(&mut cmd, &rect, &mut meshes, &mut materials);
     spawn_player(&mut cmd, &rect, &mut meshes, &mut materials);
-    spawn_attractor(&mut cmd, &rect, &mut meshes, &mut materials);
     spawn_ufos(&mut cmd, &rect, &mut meshes, &mut materials);
+    spawn_attractor(&mut cmd, &rect, &mut meshes, &mut materials);
 }
 
 fn update(
     mut players_query: Query<(&mut Mover, &mut Transform), With<Player>>,
-    attractors_query: Query<&Attractor>
+    mut ufos_query: Query<(&mut Mover, &mut Transform), (With<Ufo>, Without<Player>, Without<Attractor>)>,
+    attractors_query: Query<&Mover, (With<Attractor>, Without<Player>, Without<Ufo>)>
 ) {
     let (mut player, mut player_transform) = players_query.single_mut();
     let attractor = attractors_query.single();
-    
-    let attration = attractor.attract(&player);
 
-    player.apply_force(attration);
+    player.be_attracted(attractor);
     player.update();
     player.show(&mut player_transform);
-}
-
-fn update_ufos(
-    mut ufos_query: Query<(&mut Mover, &mut Transform), With<Ufo>>,
-    attractors_query: Query<&Attractor>
-) {
-    let attractor = attractors_query.single();
 
     for (mut ufo, mut ufo_transform) in &mut ufos_query {
 
-        let attration = attractor.attract(&ufo);
-
-        ufo.apply_force(attration);
+        ufo.be_attracted(attractor);
         ufo.update();
         ufo.show(&mut ufo_transform);
     }
 }
-
 
 fn main() {
     App::new()
@@ -69,7 +58,6 @@ fn main() {
                 toggle_resolution,
                 on_resize,
                 update,
-                update_ufos,
                 toggle_wireframe,
             ),
         )
