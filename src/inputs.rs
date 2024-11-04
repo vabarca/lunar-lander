@@ -1,5 +1,5 @@
 use crate::forces::Force;
-use crate::mover::{Mover, Player};
+use crate::bodies::{Body, Player};
 use crate::vectors::V2;
 use bevy::app::AppExit;
 use bevy::prelude::*;
@@ -20,7 +20,7 @@ pub fn cursor_position(windows: Query<&Window, With<PrimaryWindow>>) {
 
 pub fn mouse_input_system(
     buttons: Res<ButtonInput<MouseButton>>,
-    mut query: Query<&mut Mover, With<Player>>,
+    mut query: Query<&mut Body, With<Player>>,
 ) {
     let mut mover = query.single_mut();
     for _ in buttons.get_pressed() {
@@ -31,7 +31,7 @@ pub fn mouse_input_system(
 
 pub fn keyboard_input_system(
     input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<&mut Mover, With<Player>>,
+    mut query: Query<&mut Body, With<Player>>,
 ) {
     let shift = input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     let _ctrl = input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
@@ -57,18 +57,18 @@ pub fn keyboard_input_system(
     }
 }
 
-fn move_up(mover: &mut Mover) {
+fn move_up(mover: &mut Body) {
     mover.pos.add(&V2::new(0.0, 1.0));
 }
 
-fn move_down(mover: &mut Mover) {
+fn move_down(mover: &mut Body) {
     mover.pos.add(&V2::new(0.0, -1.0));
 }
 
-fn move_left(mover: &mut Mover) {
+fn move_left(mover: &mut Body) {
     mover.pos.add(&V2::new(1.0, 0.0));
 }
 
-fn move_right(mover: &mut Mover) {
+fn move_right(mover: &mut Body) {
     mover.pos.add(&V2::new(-1.0, 0.0));
 }

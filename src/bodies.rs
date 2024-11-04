@@ -7,19 +7,19 @@ use rand::prelude::*;
 
 /// This will be used to identify the main player entity
 #[derive(Component, Clone)]
-pub struct Mover {
+pub struct Body {
     pub pos: V2,
     pub vel: V2,
     pub forces: Force,
     mass: f64,
 }
 
-impl Mover {
-    pub fn origin(radius: f64) -> Mover {
-        Mover::new(V2::zeros(), radius)
+impl Body {
+    pub fn origin(radius: f64) -> Body {
+        Body::new(V2::zeros(), radius)
     }
-    pub fn new(pos: V2, radius: f64) -> Mover {
-        Mover {
+    pub fn new(pos: V2, radius: f64) -> Body {
+        Body {
             pos,
             vel: V2::zeros(),
             forces: Force::zero(),
@@ -69,11 +69,11 @@ impl Mover {
         distance
     }
 
-    pub fn be_attracted(&mut self, mover : &Mover){
+    pub fn be_attracted(&mut self, mover : &Body){
         const G :f64 = 800.0;
         let mut force = mover.pos - self.pos;
         let min_distance = self.mass + mover.mass();
-        let distance = Mover::constrain(force.mag(),min_distance, min_distance * 2.0);
+        let distance = Body::constrain(force.mag(),min_distance, min_distance * 2.0);
         let mag =  G * self.mass() * mover.mass() / (distance * distance);
         force.set_mag(mag);
         self.apply_force(Force::new(&force));
@@ -111,7 +111,7 @@ pub fn spawn_ufos(
         info!("Ufo: {} - {}", pos, radius);
         cmd.spawn((
             Ufo, 
-            Mover::new(pos.clone(), radius),
+            Body::new(pos.clone(), radius),
             MaterialMesh2dBundle {
                 mesh: Mesh2dHandle(meshes.add(Circle::new(radius as f32))),
                 material: materials.add(color),
@@ -133,7 +133,7 @@ pub fn spawn_player(
     info!("Player: {} - {}", pos, radius);
     cmd.spawn((
         Player,
-        Mover::new(pos.clone(), radius),
+        Body::new(pos.clone(), radius),
         MaterialMesh2dBundle {
             mesh: Mesh2dHandle(meshes.add(Circle::new(radius as f32))),
             material: materials.add(Color::hsl(100.0, 0.2, 0.7)),
@@ -154,7 +154,7 @@ pub fn spawn_attractor(
     info!("Attractor: {} - {}", pos, radius);
     cmd.spawn((
         Attractor,
-        Mover::new(pos.clone(), radius),
+        Body::new(pos.clone(), radius),
         MaterialMesh2dBundle {
             mesh: Mesh2dHandle(meshes.add(Circle::new(radius as f32))),
             material: materials.add(Color::hsl(100.0, 0.7, 0.7)),

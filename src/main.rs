@@ -1,5 +1,5 @@
 use bevy::{input::common_conditions::input_just_pressed, prelude::*, sprite::Wireframe2dPlugin};
-use lunar_lander::{cameras::*, corners::*, inputs::*, mover::*};
+use lunar_lander::{cameras::*, corners::*, inputs::*, bodies::*};
 
 fn setup(
     mut cmd: Commands,
@@ -21,9 +21,9 @@ fn setup(
 }
 
 fn update(
-    mut players_query: Query<(&mut Mover, &mut Transform), With<Player>>,
-    mut ufos_query: Query<(&mut Mover, &mut Transform), (With<Ufo>, Without<Player>, Without<Attractor>)>,
-    attractors_query: Query<&Mover, (With<Attractor>, Without<Player>, Without<Ufo>)>
+    mut players_query: Query<(&mut Body, &mut Transform), With<Player>>,
+    mut ufos_query: Query<(&mut Body, &mut Transform), (With<Ufo>, Without<Player>, Without<Attractor>)>,
+    attractors_query: Query<&Body, (With<Attractor>, Without<Player>, Without<Ufo>)>
 ) {
     let (mut player, mut player_transform) = players_query.single_mut();
     let attractor = attractors_query.single();
