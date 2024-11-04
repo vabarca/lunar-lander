@@ -24,9 +24,8 @@ pub fn mouse_input_system(
 ) {
     let mut mover = query.single_mut();
     for _ in buttons.get_pressed() {
-        let wind = Force::new(&V2::new(-10.0, 0.0));
         //info!("Button: poss {}", button);
-        mover.apply_force(wind);
+        mover.apply_force(Force::new(&V2::new(-10.0, 0.0)));
     }
 }
 

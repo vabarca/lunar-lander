@@ -1,4 +1,4 @@
-use crate::forces::{Force, Friction};
+use crate::forces::*;
 use crate::utils::*;
 use crate::vectors::V2;
 use bevy::prelude::*;
@@ -46,19 +46,8 @@ impl Mover {
         tranform.translation = self.pos.as_vec3();
     }
 
-    fn surface_contact(&self) -> bool {
-        self.pos.y <= 500.0
-    }
-
     fn ground_contact(&self) -> bool {
         self.pos.y <= self.mass
-    }
-
-    pub fn check_surface(&mut self, c : f64) {
-        if self.surface_contact() {
-            let friction = Friction::new(&self.vel, c);
-            self.apply_force(friction.f);
-        }
     }
 
     pub fn check_boundary(&mut self) {
@@ -88,6 +77,13 @@ impl Mover {
         let mag =  G * self.mass() * mover.mass() / (distance * distance);
         force.set_mag(mag);
         self.apply_force(Force::new(&force));
+    }
+
+    pub fn friction(&mut self, c : f64){
+        let mut friction = Force::new(&self.vel);
+        let pow2_speed = self.vel.pow2_mag();
+        friction.vec.mult(-1.0).set_mag(c * pow2_speed);
+        self.apply_force(friction);
     }
 }
 

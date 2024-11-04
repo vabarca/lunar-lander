@@ -54,11 +54,9 @@ fn main() {
             Update,
             (
                 quit_game.run_if(input_just_pressed(KeyCode::KeyQ)),
-                keyboard_input_system,
-                toggle_resolution,
                 on_resize,
                 update,
-                toggle_wireframe,
+                mouse_input_system,
             ),
         )
         .run();

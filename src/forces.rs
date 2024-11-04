@@ -28,16 +28,3 @@ impl Force {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct Friction {
-    pub f: Force,
-}
-
-impl Friction {
-    pub fn new(vel: &V2, c: f64) -> Friction {
-        let mut friction = Friction { f: Force::new(vel) };
-        let pow2_speed = vel.pow2_mag();
-        friction.f.vec.mult(-1.0).set_mag(c * pow2_speed);
-        friction
-    }
-}
