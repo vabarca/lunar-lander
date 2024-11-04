@@ -1,5 +1,5 @@
 use bevy::{input::common_conditions::input_just_pressed, prelude::*, sprite::Wireframe2dPlugin};
-use lunar_lander::{cameras::*, corners::*, forces::*, inputs::*, mover::*};
+use lunar_lander::{cameras::*, corners::*, forces::*, inputs::*, mover::*, attractor::*};
 
 fn setup(
     mut cmd: Commands,
@@ -16,21 +16,21 @@ fn setup(
     spawn_cameras(&mut cmd, &rect);
     spawn_corners(&mut cmd, &rect, &mut meshes, &mut materials);
     spawn_player(&mut cmd, &rect, &mut meshes, &mut materials);
+    spawn_attractor(&mut cmd, &rect, &mut meshes, &mut materials);
     spawn_ufos(&mut cmd, &rect, &mut meshes, &mut materials);
 }
 
 fn update(
-    mut mover_query: Query<(&mut Mover, &mut Transform)>
+    mut player_query: Query<(&mut Mover, &mut Transform), With<Player>>,
+    attractor_query: Query<&Attractor>
 ) {
-    for (mut mover, mut transform) in &mut mover_query {
-        let mass = mover.mass();
-
-        mover.apply_force(&Force::gravity(mass, 0.05));
-        mover.check_surface(0.1);
-        mover.check_boundary();
-        mover.update();
-        mover.show(&mut transform);
-    }
+    let (mut player, mut player_transform) = player_query.single_mut();
+    let attractor = attractor_query.single();
+    
+    let attration = attractor.attract(&player);
+    player.apply_force(&attration);
+    player.update();
+    player.show(&mut player_transform);
 }
 
 
@@ -53,7 +53,6 @@ fn main() {
                 on_resize,
                 update,
                 toggle_wireframe,
-                mouse_input_system,
             ),
         )
         .run();

@@ -9,8 +9,13 @@ impl Force {
     pub fn zero() -> Force {
         Force { vec: V2::zeros() }
     }
+
     pub fn new(force: &V2) -> Force {
         Force { vec: force.clone() }
+    }
+
+    pub fn from_vector_points(x:f64 , y: f64) -> Force {
+        Force { vec: V2::new(x, y) }
     }
 
     pub fn gravity(mass: f64, scale: f64) -> Force {

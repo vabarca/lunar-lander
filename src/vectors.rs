@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use rand::prelude::*;
-use std::fmt;
+use std::{fmt, ops};
 
 pub fn f64_to_f32(x: f64) -> f32 {
     let y = x as f32;
@@ -8,7 +8,7 @@ pub fn f64_to_f32(x: f64) -> f32 {
     y
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct V2 {
     pub x: f64,
     pub y: f64,
@@ -140,6 +140,41 @@ impl V2 {
 impl fmt::Display for V2 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "({:.2}, {:.2})", self.x, self.y)
+    }
+}
+
+impl ops::Add for V2 {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self {
+        Self {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+        }
+    }
+}
+
+impl ops::AddAssign for V2 {
+    fn add_assign(&mut self, rhs: V2) {
+        self.x += rhs.x;
+        self.y += rhs.y;
+    }
+}
+
+impl ops::Sub for V2 {
+    type Output = Self;
+    fn sub(self, rhs: Self) -> Self {
+        Self {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+        }
+    }
+}
+
+impl ops::SubAssign for V2 {
+    fn sub_assign(&mut self, rhs: V2) {
+        self.x -= rhs.x;
+        self.y -= rhs.y;
     }
 }
 
