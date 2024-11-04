@@ -1,5 +1,5 @@
 use bevy::{input::common_conditions::input_just_pressed, prelude::*, sprite::Wireframe2dPlugin};
-use lunar_lander::{cameras::*, corners::*, inputs::*, mover::*, attractor::*};
+use lunar_lander::{attractor::*, cameras::*, corners::*, inputs::*, mover::*};
 
 fn setup(
     mut cmd: Commands,
@@ -28,7 +28,8 @@ fn update(
     let attractor = attractor_query.single();
     
     let attration = attractor.attract(&player);
-    player.apply_force(&attration);
+
+    player.apply_force(attration);
     player.update();
     player.show(&mut player_transform);
 }

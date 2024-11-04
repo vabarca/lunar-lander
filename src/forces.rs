@@ -18,8 +18,9 @@ impl Force {
         Force { vec: V2::new(x, y) }
     }
 
-    pub fn gravity(mass: f64, scale: f64) -> Force {
-        Force::new(V2::new(0.0, -9.8 * scale).mult(mass))
+    pub fn gravity(mass: f64) -> Force {
+        const SCALE :f64 = 0.05;
+        Force::new(V2::new(0.0, -9.8 * SCALE).mult(mass))
     }
 
     pub fn reset(&mut self) {

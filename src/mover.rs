@@ -15,23 +15,23 @@ pub struct Mover {
 }
 
 impl Mover {
-    pub fn origin(mass: f64) -> Mover {
-        Mover::new(V2::zeros(), mass)
+    pub fn origin(radius: f64) -> Mover {
+        Mover::new(V2::zeros(), radius)
     }
-    pub fn new(pos: V2, mass: f64) -> Mover {
+    pub fn new(pos: V2, radius: f64) -> Mover {
         Mover {
             pos,
             vel: V2::zeros(),
             forces: Force::zero(),
-            mass,
+            mass: radius * radius * 3.141516,
         }
     }
 
-    pub fn new_random(rect: &Rect, mass: f64) -> Mover {
-        Mover::new(random_coordinates(rect), mass)
+    pub fn new_random(rect: &Rect, radius: f64) -> Mover {
+        Mover::new(random_coordinates(rect), radius)
     }
 
-    pub fn apply_force(&mut self, force: &Force) {
+    pub fn apply_force(&mut self, force: Force) {
         self.forces.vec.add(&force.vec);
     }
 
@@ -61,7 +61,7 @@ impl Mover {
     pub fn check_surface(&mut self, c : f64) {
         if self.surface_contact() {
             let friction = Friction::new(&self.vel, c);
-            self.apply_force(&friction.f);
+            self.apply_force(friction.f);
         }
     }
 
@@ -90,15 +90,15 @@ pub fn spawn_ufos(
     let mut rng = rand::thread_rng();
 
     for _ in 0..10 {
-        let mass: f64 = rng.gen::<f64>() * 10f64 + 1.0;
+        let radius: f64 = rng.gen::<f64>() * 10f64 + 1.0;
         let pos = random_coordinates(rect);
-        info!("Ufo: {} - {}", pos, mass);
+        info!("Ufo: {} - {}", pos, radius);
         let color = Color::hsl(250.0, 0.95, 0.7);
         cmd.spawn((
             Ufo, 
-            Mover::new(pos.clone(), mass),
+            Mover::new(pos.clone(), radius),
             MaterialMesh2dBundle {
-                mesh: Mesh2dHandle(meshes.add(Circle::new(mass as f32))),
+                mesh: Mesh2dHandle(meshes.add(Circle::new(radius as f32))),
                 material: materials.add(color),
                 transform: Transform::from_translation(pos.as_vec2().extend(1.0)),
                 ..default()
@@ -113,14 +113,15 @@ pub fn spawn_player(
     meshes: &mut ResMut<Assets<Mesh>>,
     materials: &mut ResMut<Assets<ColorMaterial>>,
 ) {
-    let mass: f64 = 40f64;
+    let radius: f64 = 40f64;
     let pos = random_coordinates(rect);
+    info!("Player: {} - {}", pos, radius);
     cmd.spawn((
         Player,
-        Mover::new(pos.clone(), mass),
+        Mover::new(pos.clone(), radius),
         MaterialMesh2dBundle {
-            mesh: Mesh2dHandle(meshes.add(Circle::new(mass as f32))),
-            material: materials.add(Color::hsl(100.0, 0.7, 0.7)),
+            mesh: Mesh2dHandle(meshes.add(Circle::new(radius as f32))),
+            material: materials.add(Color::hsl(100.0, 0.2, 0.7)),
             transform: Transform::from_translation(pos.as_vec2().extend(-1.0)),
             ..default()
         },
