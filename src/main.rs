@@ -23,20 +23,40 @@ fn setup(
 fn update(
     mut players_query: Query<(&mut Body, &mut Transform), With<Player>>,
     mut ufos_query: Query<(&mut Body, &mut Transform), (With<Ufo>, Without<Player>, Without<Attractor>)>,
-    attractors_query: Query<&Body, (With<Attractor>, Without<Player>, Without<Ufo>)>
+    mut attractors_query: Query<(&mut Body, &mut Transform), (With<Attractor>, Without<Player>, Without<Ufo>)>
 ) {
-    let (mut player, mut player_transform) = players_query.single_mut();
-    let attractor = attractors_query.single();
+    let (player, player_transform) = players_query.single_mut();
+    let (attractor, attractor_transform) = attractors_query.single_mut();
 
-    player.be_attracted(attractor);
-    player.update();
-    player.show(&mut player_transform);
+    let mut bodies = Vec::new();
+    let mut tranforms = Vec::new();
 
-    for (mut ufo, mut ufo_transform) in &mut ufos_query {
+    for (ufo, tranform) in &mut ufos_query {
+        bodies.push(ufo);
+        tranforms.push(tranform);
+    }
 
-        ufo.be_attracted(attractor);
-        ufo.update();
-        ufo.show(&mut ufo_transform);
+    bodies.push(attractor);
+    tranforms.push(attractor_transform);
+    bodies.push(player);
+    tranforms.push(player_transform);
+
+
+    for i in 0..bodies.len() {
+        let (left, right) = bodies.split_at_mut(i + 1);
+        let fr = &mut left[i];
+        let mut counter = 0;
+        info!("Iteration: {i}");
+        for sc in right {
+            fr.be_attracted(sc);
+            info!("   * {counter}");
+            counter += 1;
+        }
+    }
+
+    for i in 0..bodies.len(){
+        bodies[i].update();
+        bodies[i].show(&mut tranforms[i])
     }
 }
 

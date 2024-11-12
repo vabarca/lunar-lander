@@ -57,6 +57,10 @@ impl Body {
         if self.body_contact(body){
             const BOUNCE_LOST : f64 = -0.9;
             self.vel.mult(BOUNCE_LOST);
+            let mut diff = body.pos - self.pos;
+            diff.set_mag(self.radius + body.radius);
+            self.pos = diff + body.pos;
+
         }
     }
 
@@ -114,7 +118,7 @@ pub fn spawn_ufos(
 ) {
     let mut rng = rand::thread_rng();
 
-    for _ in 0..10 {
+    for _ in 0..4 {
         let color = Color::hsl(250.0, 0.95, 0.7);
         let radius: f64 = rng.gen::<f64>() * 10f64 + 1.0;
         let pos = random_coordinates(rect);
@@ -168,8 +172,9 @@ pub fn spawn_attractor(
         MaterialMesh2dBundle {
             mesh: Mesh2dHandle(meshes.add(Circle::new(radius as f32))),
             material: materials.add(Color::hsl(100.0, 0.7, 0.7)),
-            transform: Transform::from_translation(pos.as_vec2().extend(-1.0)),
+            transform: Transform::from_translation(pos.as_vec2().extend(-2.0)),
             ..default()
         },
     ));
 }
+
