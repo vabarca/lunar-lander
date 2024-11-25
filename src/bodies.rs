@@ -1,8 +1,8 @@
 use crate::forces::*;
 use crate::utils::*;
 use crate::vectors::V2;
+use bevy::color::palettes::css::WHITE;
 use bevy::prelude::*;
-use bevy::sprite::{MaterialMesh2dBundle, Mesh2dHandle};
 use rand::prelude::*;
 
 /// This will be used to identify the main player entity
@@ -40,8 +40,9 @@ impl Body {
         self.forces.reset();
     }
 
-    pub fn show(&self, tranform: &mut Transform) {
+    pub fn show(&self, gizmos : &mut Gizmos, tranform: &mut Transform) {
         tranform.translation = self.pos.as_vec3();
+        gizmos.circle_2d(self.pos.as_vec2(), self.radius as f32, WHITE);
     }
 
     fn ground_contact(&self) -> bool {
@@ -110,37 +111,10 @@ pub struct Player;
 #[derive(Component)]
 pub struct Ufo;
 
-pub fn spawn_ufos(
-    cmd: &mut Commands, 
-    rect: &Rect,
-    meshes: &mut ResMut<Assets<Mesh>>,
-    materials: &mut ResMut<Assets<ColorMaterial>>
-) {
-    let mut rng = rand::thread_rng();
-
-    for _ in 0..4 {
-        let color = Color::hsl(250.0, 0.95, 0.7);
-        let radius: f64 = rng.gen::<f64>() * 10f64 + 1.0;
-        let pos = random_coordinates(rect);
-        info!("Ufo: {} - {}", pos, radius);
-        cmd.spawn((
-            Ufo, 
-            Body::new(pos.clone(), radius),
-            MaterialMesh2dBundle {
-                mesh: Mesh2dHandle(meshes.add(Circle::new(radius as f32))),
-                material: materials.add(color),
-                transform: Transform::from_translation(pos.as_vec2().extend(1.0)),
-                ..default()
-            },
-        ));
-    }
-}
-
 pub fn spawn_player(
     cmd: &mut Commands,
     rect: &Rect,
-    meshes: &mut ResMut<Assets<Mesh>>,
-    materials: &mut ResMut<Assets<ColorMaterial>>,
+    asset_server: &Res<AssetServer>
 ) {
     let radius: f64 = 40f64;
     let pos = random_coordinates(rect);
@@ -148,20 +122,41 @@ pub fn spawn_player(
     cmd.spawn((
         Player,
         Body::new(pos.clone(), radius),
-        MaterialMesh2dBundle {
-            mesh: Mesh2dHandle(meshes.add(Circle::new(radius as f32))),
-            material: materials.add(Color::hsl(100.0, 0.2, 0.7)),
+        SpriteBundle {
+            texture: asset_server.load("sprite/spacecraft_64x64.png"),
             transform: Transform::from_translation(pos.as_vec2().extend(-1.0)),
             ..default()
-        },
+        }
     ));
+}
+
+pub fn spawn_ufos(
+    cmd: &mut Commands, 
+    rect: &Rect,
+    asset_server: &Res<AssetServer>
+) {
+    let mut rng = rand::thread_rng();
+
+    for _ in 0..4 {
+        let radius: f64 = rng.gen::<f64>() * 10f64 + 1.0;
+        let pos = random_coordinates(rect);
+        info!("Ufo: {} - {}", pos, radius);
+        cmd.spawn((
+            Ufo, 
+            Body::new(pos.clone(), radius),
+            SpriteBundle {
+                texture: asset_server.load("sprite/ufo_64x64.png"),
+                transform: Transform::from_translation(pos.as_vec2().extend(-2.0)),
+                ..default()
+            }
+        ));
+    }
 }
 
 pub fn spawn_attractor(
     cmd: &mut Commands,
     rect: &Rect,
-    meshes: &mut ResMut<Assets<Mesh>>,
-    materials: &mut ResMut<Assets<ColorMaterial>>,
+    asset_server: &Res<AssetServer>
 ) {
     let radius: f64 = 80f64;
     let pos = middle_coordinates(rect);
@@ -169,12 +164,12 @@ pub fn spawn_attractor(
     cmd.spawn((
         Attractor,
         Body::new(pos.clone(), radius),
-        MaterialMesh2dBundle {
-            mesh: Mesh2dHandle(meshes.add(Circle::new(radius as f32))),
-            material: materials.add(Color::hsl(100.0, 0.7, 0.7)),
-            transform: Transform::from_translation(pos.as_vec2().extend(-2.0)),
+        SpriteBundle {
+            texture: asset_server.load("sprite/planet_256x256.png"),
+            transform: Transform::from_translation(pos.as_vec2().extend(-3.0)),
             ..default()
-        },
+        }
     ));
 }
+
 

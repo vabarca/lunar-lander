@@ -1,11 +1,10 @@
-use bevy::{input::common_conditions::input_just_pressed, prelude::*, sprite::Wireframe2dPlugin};
-use lunar_lander::{cameras::*, corners::*, inputs::*, bodies::*};
+use bevy::{input::common_conditions::input_just_pressed, prelude::*};
+use lunar_lander::{cameras::*, inputs::*, bodies::*};
 
 fn setup(
     mut cmd: Commands,
     mut windows: Query<&mut Window>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    asset_server: Res<AssetServer>
 ) {
     let mut window = windows.single_mut();
     window.resizable = false;
@@ -14,16 +13,16 @@ fn setup(
     let rect =  Rect::new(0.0, 0.0, screen.x, screen.y);
 
     spawn_cameras(&mut cmd, &rect);
-    spawn_corners(&mut cmd, &rect, &mut meshes, &mut materials);
-    spawn_player(&mut cmd, &rect, &mut meshes, &mut materials);
-    spawn_ufos(&mut cmd, &rect, &mut meshes, &mut materials);
-    spawn_attractor(&mut cmd, &rect, &mut meshes, &mut materials);
+    spawn_player(&mut cmd, &rect, &asset_server);
+    spawn_ufos(&mut cmd, &rect, &asset_server);
+    spawn_attractor(&mut cmd, &rect, &asset_server);
 }
 
 fn update(
     mut players_query: Query<(&mut Body, &mut Transform), With<Player>>,
     mut ufos_query: Query<(&mut Body, &mut Transform), (With<Ufo>, Without<Player>, Without<Attractor>)>,
-    mut attractors_query: Query<(&mut Body, &mut Transform), (With<Attractor>, Without<Player>, Without<Ufo>)>
+    mut attractors_query: Query<(&mut Body, &mut Transform), (With<Attractor>, Without<Player>, Without<Ufo>)>,
+    mut gizmos: Gizmos
 ) {
     let (player, player_transform) = players_query.single_mut();
     let (attractor, attractor_transform) = attractors_query.single_mut();
@@ -45,18 +44,18 @@ fn update(
     for i in 0..bodies.len() {
         let (left, right) = bodies.split_at_mut(i + 1);
         let fr = &mut left[i];
-        let mut counter = 0;
-        info!("Iteration: {i}");
+        //let mut counter = 0;
+        // info!("Iteration: {i}");
         for sc in right {
             fr.be_attracted(sc);
-            info!("   * {counter}");
-            counter += 1;
+            // info!("   * {counter}");
+            //counter += 1;
         }
     }
 
     for i in 0..bodies.len(){
         bodies[i].update();
-        bodies[i].show(&mut tranforms[i])
+        bodies[i].show(&mut gizmos, &mut tranforms[i])
     }
 }
 
@@ -68,7 +67,6 @@ fn main() {
             small: Vec2::new(800.0, 600.0),
         })
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
-        .add_plugins(Wireframe2dPlugin)
         .add_systems(Startup, (setup, setup_ui))
         .add_systems(
             Update,
