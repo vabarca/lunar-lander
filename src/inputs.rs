@@ -1,5 +1,5 @@
-use crate::forces::Force;
 use crate::bodies::{Body, Player};
+use crate::forces::Force;
 use crate::vectors::V2;
 use bevy::app::AppExit;
 use bevy::prelude::*;

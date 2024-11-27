@@ -1,7 +1,6 @@
 use crate::forces::*;
 use crate::utils::*;
 use crate::vectors::V2;
-use bevy::color::palettes::css::WHITE;
 use bevy::prelude::*;
 use rand::prelude::*;
 
@@ -40,28 +39,26 @@ impl Body {
         self.forces.reset();
     }
 
-    pub fn show(&self, gizmos : &mut Gizmos, tranform: &mut Transform) {
-        tranform.translation = self.pos.as_vec3();
-        gizmos.circle_2d(self.pos.as_vec2(), self.radius as f32, WHITE);
+    pub fn show(&self, tranform: &mut Transform) {
+        tranform.translation = self.pos.as_vec2().extend(tranform.translation.z);
     }
 
     fn ground_contact(&self) -> bool {
         self.pos.y <= self.mass
     }
 
-    fn body_contact(&mut self, body : &Body) -> bool {
+    fn body_contact(&mut self, body: &Body) -> bool {
         let diff = body.pos - self.pos;
         diff.mag() <= self.radius + body.radius
     }
 
-    pub fn check_collitions(&mut self, body : &Body){
-        if self.body_contact(body){
-            const BOUNCE_LOST : f64 = -0.9;
+    pub fn check_collitions(&mut self, body: &Body) {
+        if self.body_contact(body) {
+            const BOUNCE_LOST: f64 = -0.9;
             self.vel.mult(BOUNCE_LOST);
             let mut diff = body.pos - self.pos;
             diff.set_mag(self.radius + body.radius);
             self.pos = diff + body.pos;
-
         }
     }
 
@@ -74,27 +71,27 @@ impl Body {
         }
     }
 
-    fn constrain(distance: f64, min: f64, max :f64) -> f64{
+    fn constrain(distance: f64, min: f64, max: f64) -> f64 {
         if distance < min {
-            return min
+            return min;
         }
         if distance > max {
-            return max
+            return max;
         }
         distance
     }
 
-    pub fn be_attracted(&mut self, body : &Body){
-        const G :f64 = 800.0;
+    pub fn be_attracted(&mut self, body: &Body) {
+        const G: f64 = 800.0;
         let mut force = body.pos - self.pos;
         let min_distance = self.mass + body.mass;
-        let distance = Body::constrain(force.mag(),min_distance, min_distance * 2.0);
-        let mag =  G * self.mass * body.mass / (distance * distance);
+        let distance = Body::constrain(force.mag(), min_distance, min_distance * 2.0);
+        let mag = G * self.mass * body.mass / (distance * distance);
         force.set_mag(mag);
         self.apply_force(Force::new(&force));
     }
 
-    pub fn friction(&mut self, c : f64){
+    pub fn friction(&mut self, c: f64) {
         let mut friction = Force::new(&self.vel);
         let pow2_speed = self.vel.pow2_mag();
         friction.vec.mult(-1.0).set_mag(c * pow2_speed);
@@ -105,36 +102,72 @@ impl Body {
 #[derive(Component)]
 pub struct Attractor;
 
+#[derive(Bundle)]
+pub struct AttractorBundle {
+    attractor: Attractor,
+    body: Body,
+}
+
+impl AttractorBundle {
+    pub fn new(pos: V2, radius: f64) -> Self {
+        Self {
+            body: Body::new(pos, radius),
+            attractor: Attractor,
+        }
+    }
+}
+
 #[derive(Component)]
 pub struct Player;
+
+#[derive(Bundle)]
+pub struct PlayerBundle {
+    player: Player,
+    body: Body,
+}
+
+impl PlayerBundle {
+    pub fn new(pos: V2, radius: f64) -> Self {
+        Self {
+            body: Body::new(pos, radius),
+            player: Player,
+        }
+    }
+}
 
 #[derive(Component)]
 pub struct Ufo;
 
-pub fn spawn_player(
-    cmd: &mut Commands,
-    rect: &Rect,
-    asset_server: &Res<AssetServer>
-) {
+#[derive(Bundle)]
+pub struct UfoBundle {
+    ufo: Ufo,
+    body: Body,
+}
+
+impl UfoBundle {
+    pub fn new(pos: V2, radius: f64) -> Self {
+        Self {
+            body: Body::new(pos, radius),
+            ufo: Ufo,
+        }
+    }
+}
+
+pub fn spawn_player(cmd: &mut Commands, rect: &Rect, asset_server: &Res<AssetServer>) {
     let radius: f64 = 40f64;
     let pos = random_coordinates(rect);
     info!("Player: {} - {}", pos, radius);
     cmd.spawn((
-        Player,
-        Body::new(pos.clone(), radius),
+        PlayerBundle::new(pos.clone(), radius),
         SpriteBundle {
             texture: asset_server.load("sprite/spacecraft_64x64.png"),
             transform: Transform::from_translation(pos.as_vec2().extend(-1.0)),
             ..default()
-        }
+        },
     ));
 }
 
-pub fn spawn_ufos(
-    cmd: &mut Commands, 
-    rect: &Rect,
-    asset_server: &Res<AssetServer>
-) {
+pub fn spawn_ufos(cmd: &mut Commands, rect: &Rect, asset_server: &Res<AssetServer>) {
     let mut rng = rand::thread_rng();
 
     for _ in 0..4 {
@@ -142,34 +175,26 @@ pub fn spawn_ufos(
         let pos = random_coordinates(rect);
         info!("Ufo: {} - {}", pos, radius);
         cmd.spawn((
-            Ufo, 
-            Body::new(pos.clone(), radius),
+            UfoBundle::new(pos.clone(), radius),
             SpriteBundle {
                 texture: asset_server.load("sprite/ufo_64x64.png"),
                 transform: Transform::from_translation(pos.as_vec2().extend(-2.0)),
                 ..default()
-            }
+            },
         ));
     }
 }
 
-pub fn spawn_attractor(
-    cmd: &mut Commands,
-    rect: &Rect,
-    asset_server: &Res<AssetServer>
-) {
+pub fn spawn_attractor(cmd: &mut Commands, rect: &Rect, asset_server: &Res<AssetServer>) {
     let radius: f64 = 80f64;
     let pos = middle_coordinates(rect);
     info!("Attractor: {} - {}", pos, radius);
     cmd.spawn((
-        Attractor,
-        Body::new(pos.clone(), radius),
+        AttractorBundle::new(pos.clone(), radius),
         SpriteBundle {
             texture: asset_server.load("sprite/planet_256x256.png"),
             transform: Transform::from_translation(pos.as_vec2().extend(-3.0)),
             ..default()
-        }
+        },
     ));
 }
-
-
