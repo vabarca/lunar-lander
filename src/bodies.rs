@@ -7,6 +7,7 @@ use rand::prelude::*;
 /// This will be used to identify the main player entity
 #[derive(Component, Clone)]
 pub struct Body {
+    pub name: String,
     pub pos: V2,
     pub vel: V2,
     pub forces: Force,
@@ -15,11 +16,9 @@ pub struct Body {
 }
 
 impl Body {
-    pub fn origin(radius: f64) -> Body {
-        Body::new(V2::zeros(), radius)
-    }
-    pub fn new(pos: V2, radius: f64) -> Body {
+    pub fn new(name: String, pos: V2, radius: f64) -> Body {
         Body {
+            name,
             pos,
             vel: V2::zeros(),
             forces: Force::zero(),
@@ -102,6 +101,12 @@ impl Body {
 #[derive(Component)]
 pub struct Attractor;
 
+#[derive(Component)]
+pub struct Player;
+
+#[derive(Component)]
+pub struct Ufo;
+
 #[derive(Bundle)]
 pub struct AttractorBundle {
     attractor: Attractor,
@@ -109,16 +114,13 @@ pub struct AttractorBundle {
 }
 
 impl AttractorBundle {
-    pub fn new(pos: V2, radius: f64) -> Self {
+    pub fn new(name: String, pos: V2, radius: f64) -> Self {
         Self {
-            body: Body::new(pos, radius),
+            body: Body::new(name, pos, radius),
             attractor: Attractor,
         }
     }
 }
-
-#[derive(Component)]
-pub struct Player;
 
 #[derive(Bundle)]
 pub struct PlayerBundle {
@@ -127,16 +129,13 @@ pub struct PlayerBundle {
 }
 
 impl PlayerBundle {
-    pub fn new(pos: V2, radius: f64) -> Self {
+    pub fn new(name: String, pos: V2, radius: f64) -> Self {
         Self {
-            body: Body::new(pos, radius),
+            body: Body::new(name, pos, radius),
             player: Player,
         }
     }
 }
-
-#[derive(Component)]
-pub struct Ufo;
 
 #[derive(Bundle)]
 pub struct UfoBundle {
@@ -145,9 +144,9 @@ pub struct UfoBundle {
 }
 
 impl UfoBundle {
-    pub fn new(pos: V2, radius: f64) -> Self {
+    pub fn new(name: String,pos: V2, radius: f64) -> Self {
         Self {
-            body: Body::new(pos, radius),
+            body: Body::new(name, pos, radius),
             ufo: Ufo,
         }
     }
@@ -158,7 +157,7 @@ pub fn spawn_player(cmd: &mut Commands, rect: &Rect, asset_server: &Res<AssetSer
     let pos = random_coordinates(rect);
     info!("Player: {} - {}", pos, radius);
     cmd.spawn((
-        PlayerBundle::new(pos.clone(), radius),
+        PlayerBundle::new("Player".to_string(), pos.clone(), radius),
         SpriteBundle {
             texture: asset_server.load("sprite/spacecraft_64x64.png"),
             transform: Transform::from_translation(pos.as_vec2().extend(-1.0)),
@@ -170,12 +169,12 @@ pub fn spawn_player(cmd: &mut Commands, rect: &Rect, asset_server: &Res<AssetSer
 pub fn spawn_ufos(cmd: &mut Commands, rect: &Rect, asset_server: &Res<AssetServer>) {
     let mut rng = rand::thread_rng();
 
-    for _ in 0..4 {
+    for i in 0..4 {
         let radius: f64 = rng.gen::<f64>() * 10f64 + 1.0;
         let pos = random_coordinates(rect);
         info!("Ufo: {} - {}", pos, radius);
         cmd.spawn((
-            UfoBundle::new(pos.clone(), radius),
+            UfoBundle::new(format!("Ufo {}", i), pos.clone(), radius),
             SpriteBundle {
                 texture: asset_server.load("sprite/ufo_64x64.png"),
                 transform: Transform::from_translation(pos.as_vec2().extend(-2.0)),
@@ -190,7 +189,7 @@ pub fn spawn_attractor(cmd: &mut Commands, rect: &Rect, asset_server: &Res<Asset
     let pos = middle_coordinates(rect);
     info!("Attractor: {} - {}", pos, radius);
     cmd.spawn((
-        AttractorBundle::new(pos.clone(), radius),
+        AttractorBundle::new("Attractor".to_string(), pos.clone(), radius),
         SpriteBundle {
             texture: asset_server.load("sprite/planet_256x256.png"),
             transform: Transform::from_translation(pos.as_vec2().extend(-3.0)),

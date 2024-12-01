@@ -15,45 +15,25 @@ fn setup(mut cmd: Commands, mut windows: Query<&mut Window>, asset_server: Res<A
 }
 
 fn update(
-    mut players_query: Query<(&mut Body, &mut Transform), With<Player>>,
-    mut ufos_query: Query<
-        (&mut Body, &mut Transform),
-        (With<Ufo>, Without<Player>, Without<Attractor>),
-    >,
-    mut attractors_query: Query<
-        (&mut Body, &mut Transform),
-        (With<Attractor>, Without<Player>, Without<Ufo>),
-    >,
+    mut obj_query: Query<(&mut Body, &mut Transform)>
 ) {
-    let (player, player_transform) = players_query.single_mut();
-    let (attractor, attractor_transform) = attractors_query.single_mut();
 
-    let mut bodies = Vec::new();
-    let mut bodies_copy = Vec::new();
-    let mut tranforms = Vec::new();
+    let mut iter = obj_query.iter_combinations_mut();
 
-    for (ufo, tranform) in &mut ufos_query {
-        bodies_copy.push(ufo.clone());
-        bodies.push(ufo);
-        tranforms.push(tranform);
-    }
+    info!("------------------");
 
-    bodies.push(attractor);
-    tranforms.push(attractor_transform);
-    bodies.push(player);
-    tranforms.push(player_transform);
+    while let Some(
+        [(mut body1, _transform1),(mut body2, _transform2) ],
+      ) = iter.fetch_next()
+      {
+        body1.be_attracted(&body2);
+        body2.be_attracted(&body1);
+        info!("{} {}", body1.name, body2.name)
+      }
 
-
-    let mut i :usize = 0;
-    for mut fr in bodies{
-        for sc in &bodies_copy{
-            if fr.mass != sc.mass {
-                fr.be_attracted(&sc);
-            }
-        }
-        fr.update();
-        fr.show(&mut tranforms[i]);
-        i +=1 ;
+    for (mut body, mut transform) in &mut obj_query{
+        body.update();
+        body.show(&mut transform);
     }
 }
 
