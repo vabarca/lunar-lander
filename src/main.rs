@@ -14,24 +14,18 @@ fn setup(mut cmd: Commands, mut windows: Query<&mut Window>, asset_server: Res<A
     spawn_attractor(&mut cmd, &rect, &asset_server);
 }
 
-fn update(
-    mut obj_query: Query<(&mut Body, &mut Transform)>
-) {
-
+fn update(mut obj_query: Query<(&mut Body, &mut Transform)>) {
     let mut iter = obj_query.iter_combinations_mut();
 
     info!("------------------");
 
-    while let Some(
-        [(mut body1, _transform1),(mut body2, _transform2) ],
-      ) = iter.fetch_next()
-      {
+    while let Some([(mut body1, _transform1), (mut body2, _transform2)]) = iter.fetch_next() {
         body1.be_attracted(&body2);
         body2.be_attracted(&body1);
         info!("{} {}", body1.name, body2.name)
-      }
+    }
 
-    for (mut body, mut transform) in &mut obj_query{
+    for (mut body, mut transform) in &mut obj_query {
         body.update();
         body.show(&mut transform);
     }

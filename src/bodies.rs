@@ -12,6 +12,9 @@ pub struct Body {
     pub vel: V2,
     pub forces: Force,
     pub radius: f64,
+    pub angle: f64,
+    pub angle_vel: f64,
+    pub angle_acc: f64,
     pub mass: f64,
 }
 
@@ -23,6 +26,9 @@ impl Body {
             vel: V2::zeros(),
             forces: Force::zero(),
             radius,
+            angle: 0.0,
+            angle_vel: 0.0,
+            angle_acc: 0.0,
             mass: radius * radius * 3.141516,
         }
     }
@@ -35,11 +41,15 @@ impl Body {
         self.forces.vec.div(self.mass);
         self.vel.add(&self.forces.vec);
         self.pos.add(&self.vel);
+        self.angle += self.angle_vel;
+        self.angle_vel += self.angle_acc;
+        self.angle_acc = (1.0 / self.mass) * self.forces.vec.y;
         self.forces.reset();
     }
 
     pub fn show(&self, tranform: &mut Transform) {
         tranform.translation = self.pos.as_vec2().extend(tranform.translation.z);
+        tranform.rotate_z(self.angle as f32);
     }
 
     fn ground_contact(&self) -> bool {
@@ -144,7 +154,7 @@ pub struct UfoBundle {
 }
 
 impl UfoBundle {
-    pub fn new(name: String,pos: V2, radius: f64) -> Self {
+    pub fn new(name: String, pos: V2, radius: f64) -> Self {
         Self {
             body: Body::new(name, pos, radius),
             ufo: Ufo,
